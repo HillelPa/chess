@@ -1,10 +1,10 @@
-import javax.swing.*;
-import java.awt.event.*;
-import java.awt.*;
-
 
 public class test {
     public static void main (String [] args){
-        JFrame home = new Home();
+        Echiquier ech = new Echiquier();
+        //ech.afficher();
+        System.out.println(ech.echiquier[0][0]);
+        EchiquierG te = new EchiquierG(ech);
+        System.out.println(te.getHeight());
     }
 }
