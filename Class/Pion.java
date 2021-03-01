@@ -2,7 +2,7 @@ public class Pion extends Piece {
 
 	public Pion(boolean aCouleur){ // c true : blanc ; c false : noir
 	
-	super("pion",aCouleur);
+	super("Pion",0,aCouleur);
 	valeur = 0;
 	}
 	
