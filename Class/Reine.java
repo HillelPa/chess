@@ -1,6 +1,6 @@
 public class Reine extends Piece {
 
-    public Reine(){
+    public Reine(boolean aCouleur){
         super("Reine",5,aCouleur);
     }
 
