@@ -1,26 +1,29 @@
 public abstract class Piece {
 	
 	//Nom de la piece
-	private String nom;
+	public String nom;
 	
 	//Valeur de la piece
-	private int valeur;
+	public int valeur;
 	
 	//Couleur de la piece, false noir, true blanc
-	private boolean couleur;
+	public boolean couleur;
 	
 	// Coordonnées
-	private int coordonneeX;
-	private int coordonneeY;
+	public int coordonneeX;
+	public int coordonneeY;
 	
 	//contructeur de la piece (nom, couleur, coordonnées)
+<<<<<<< HEAD
 	public Piece(String aNom, int aValeur, boolean aCouleur, int aCoordonneeX, int aCoordonneeY) {
+=======
+	public Piece(String aNom, boolean aCouleur) {
+>>>>>>> 30684fe40bcd1954d2bd892886a7f6359110a170
 		
 		nom = aNom;
 		valeur = aValeur;
 		couleur = aCouleur;
-		CoordonneeX = aCoordonneeX;
-		CoordonneeY = aCoordonneeY;
+		
 		
 	}
 	
