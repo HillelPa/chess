@@ -10,8 +10,8 @@ public abstract class Piece {
 	public boolean couleur;
 	
 	// Coordonnées
-	public int coordonneeX;
-	public int coordonneeY;
+	//public int coordonneeX;
+	//public int coordonneeY;
 	
 	//contructeur de la piece (nom, couleur, coordonnées)
 	public Piece(String aNom, boolean aCouleur) {
