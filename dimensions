@@ -1,0 +1,41 @@
+JFrame fenetre : 1280x720 pixels (taille assez universelle)
+setResizable(false)
+
+_____Menu principal_____
+
+JPanel fond : (0,0,1280,720)
+
+JLabel imageFond : (0,0,1280,720)
+
+JPanel principal : (320,10,640,700)
+
+JLabel NomJeu : 
+
+JButton Jouer : 
+
+JButton Règles : 
+
+JButton JouerContreIA : 
+
+JButton Options : 
+
+_____Fenetre de jeu_____
+
+Echiquier (=8x8 cases) : ( 290,10,700,700) //il fait du 700x700, on profite au maximum de l'écran en vertical
+
+Taille de chaque case : ( 700/8)
+
+JLabel CimetièreBlancs : (10,150,250,570)
+
+JLabel CimetièreNoirs : ( 1030,150,250,570)
+
+TempsBlancs : (10,10,250, 80)
+
+TempsNoirs : (1030,10,250, 80)
+
+AbandonnerBlancs : (10, 100,250,40)
+
+AbandonnerNoirs : (1030,100,250,40)
+
+_____Ecran de fin_____
+JPanel principal : (320,10,640,700)
