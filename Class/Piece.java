@@ -1,4 +1,9 @@
+import java.awt.*;
+
 public abstract class Piece {
+	
+	//IMAGE
+	public Image image;
 	
 	//Nom de la piece
 	public String nom;
