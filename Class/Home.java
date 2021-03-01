@@ -54,7 +54,7 @@ public class Home extends JFrame implements MouseListener {
 
         if(e.getX() <= (int)(this.getWidth()*345/420) && e.getX()>= (int)(136*this.getWidth()/480)
                 && e.getY() <= (int)(this.getHeight()*323/720) && e.getY() >= (int)(229*this.getHeight()/720)){
-            System.out.println("JOUER");
+            EchiquierG ech = new EchiquierG();
         }
         if(e.getX() <= (int)(this.getWidth()*345/420) && e.getX()>= (int)(136*this.getWidth()/480)
                 && e.getY() <= (int)(this.getHeight()*465/720) && e.getY() >= (int)(396*this.getHeight()/720)){
@@ -73,5 +73,9 @@ public class Home extends JFrame implements MouseListener {
     public void mouseReleased(MouseEvent e){}
     public void mouseEntered(MouseEvent e){}
     public void mouseExited(MouseEvent e){}
+
+public static void main (String [] args){
+	Home h = new Home();
+}
 
 }
