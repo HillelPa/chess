@@ -1,6 +1,10 @@
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 
 public class Home extends JFrame implements MouseListener {
@@ -54,7 +58,10 @@ public class Home extends JFrame implements MouseListener {
         }
         if(e.getX() <= (int)(this.getWidth()*345/420) && e.getX()>= (int)(136*this.getWidth()/480)
                 && e.getY() <= (int)(this.getHeight()*465/720) && e.getY() >= (int)(396*this.getHeight()/720)){
-            System.out.println("RÈGLES");
+            String link = "https://ecole.apprendre-les-echecs.com/regles-echecs/";
+            try{
+                Desktop.getDesktop().browse(new URL(link).toURI());
+            }catch(URISyntaxException | IOException er){}
         }
         if(e.getX() <= (int)(this.getWidth()*449/420) && e.getX()>= (int)(414*this.getWidth()/480)
                 && e.getY() <= (int)(this.getHeight()*672/720) && e.getY() >= (int)(639*this.getHeight()/720)){
@@ -66,6 +73,5 @@ public class Home extends JFrame implements MouseListener {
     public void mouseReleased(MouseEvent e){}
     public void mouseEntered(MouseEvent e){}
     public void mouseExited(MouseEvent e){}
-
 
 }
