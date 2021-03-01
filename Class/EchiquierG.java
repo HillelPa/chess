@@ -24,6 +24,8 @@ public class EchiquierG extends JFrame{
         setResizable(false);
         setLayout(null);
         
+        setBackground(new Color(40,40,40));
+        
         setAlwaysOnTop(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
