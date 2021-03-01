@@ -9,6 +9,9 @@ public abstract class Piece {
 	//Couleur de la piece, false noir, true blanc
 	public boolean couleur;
 	
+	//Image
+	public ImageIcon image;
+	
 	// Coordonnées
 	//public int coordonneeX;
 	//public int coordonneeY;
