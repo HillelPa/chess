@@ -19,7 +19,7 @@ public class Home extends JFrame implements MouseListener {
         int width = (int)screenSize.getWidth();
         int height = (int)screenSize.getHeight();
         int larg = (int)width/3;
-        int haut = (int)width/2;
+        int haut = (int)width/2 + 27;
 
         //FENETRE
         setBounds(width/2 - larg/2 , height/2 - haut/2, larg, haut);
@@ -47,7 +47,7 @@ public class Home extends JFrame implements MouseListener {
     }
 
     public void paint(Graphics g) {
-        g.drawImage(image, 0,0,this.getWidth(),this.getHeight(), this);
+        g.drawImage(image, 0,27,this.getWidth(),this.getHeight()-27, this);
     }
 
     public void mouseClicked(MouseEvent e){
@@ -55,6 +55,7 @@ public class Home extends JFrame implements MouseListener {
         if(e.getX() <= (int)(this.getWidth()*345/420) && e.getX()>= (int)(136*this.getWidth()/480)
                 && e.getY() <= (int)(this.getHeight()*323/720) && e.getY() >= (int)(229*this.getHeight()/720)){
             EchiquierG ech = new EchiquierG();
+            this.dispose();
         }
         if(e.getX() <= (int)(this.getWidth()*345/420) && e.getX()>= (int)(136*this.getWidth()/480)
                 && e.getY() <= (int)(this.getHeight()*465/720) && e.getY() >= (int)(396*this.getHeight()/720)){
