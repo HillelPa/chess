@@ -14,9 +14,10 @@ public abstract class Piece {
 	private int coordonneeY;
 	
 	//contructeur de la piece (nom, couleur, coordonnées)
-	public Piece(String aNom, boolean aCouleur, int aCoordonneeX, int aCoordonneeY) {
+	public Piece(String aNom, int aValeur, boolean aCouleur, int aCoordonneeX, int aCoordonneeY) {
 		
 		nom = aNom;
+		valeur = aValeur;
 		couleur = aCouleur;
 		CoordonneeX = aCoordonneeX;
 		CoordonneeY = aCoordonneeY;
