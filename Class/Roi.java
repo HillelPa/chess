@@ -24,6 +24,11 @@ public class Roi extends Piece {
     }
     
     public boolean typeDeplacement(Deplacement deplacement){
-		return true; // à changer c'etait juste pour pouvoir créer la classe
+		if(Math.abs(deplacement.getDeplacementX() * deplacement.getDeplacementY()) <= 1 && 
+			Math.abs(deplacement.getDeplacementX()) - Math.abs(deplacement.getDeplacementY()) <= 1 &&
+			Math.abs(deplacement.getDeplacementX()) - Math.abs(deplacement.getDeplacementY()) >= -1){
+			return true;
+		}
+		return false;
 	}
 }

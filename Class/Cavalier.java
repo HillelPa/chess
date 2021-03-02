@@ -24,6 +24,10 @@ public class Cavalier extends Piece {
     }
     
     public boolean typeDeplacement(Deplacement deplacement){
-		return true; // à changer c'etait juste pour pouvoir créer la classe
+		if((Math.abs(deplacement.getDeplacementX()) == 2 && Math.abs(deplacement.getDeplacementY()) == 1 )| 
+		   (Math.abs(deplacement.getDeplacementX()) == 1 && Math.abs(deplacement.getDeplacementY()) == 2)){
+			   return true;
+		}
+		return false;
 	}
 }

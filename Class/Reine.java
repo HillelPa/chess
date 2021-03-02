@@ -23,6 +23,11 @@ public class Reine extends Piece {
     }
     
     public boolean typeDeplacement(Deplacement deplacement){
-		return true; // à changer c'etait juste pour pouvoir créer la classe
+		if(Math.abs(deplacement.getDeplacementX()) - Math.abs(deplacement.getDeplacementY()) == 0 | 
+		   deplacement.getDeplacementX() * deplacement.getDeplacementY() == 0){
+			
+			return true;
+		}
+		return false;
 	}
 }
