@@ -24,6 +24,9 @@ public class Roi extends Piece {
     }
     
     public boolean typeDeplacement(Deplacement deplacement){
+		
+		//Le roi se déplace d'une case dans n'import quel sens
+		
 		if(Math.abs(deplacement.getDeplacementX() * deplacement.getDeplacementY()) <= 1 && 
 			Math.abs(deplacement.getDeplacementX()) - Math.abs(deplacement.getDeplacementY()) <= 1 &&
 			Math.abs(deplacement.getDeplacementX()) - Math.abs(deplacement.getDeplacementY()) >= -1){

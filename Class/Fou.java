@@ -24,6 +24,9 @@ public class Fou extends Piece {
     }
     
     public boolean typeDeplacement(Deplacement deplacement){
+		
+		//Le fou se déplace sur les diagonales de n'importe quel nombre de cases
+		
 		if((Math.abs(deplacement.getDeplacementX()))-(Math.abs(deplacement.getDeplacementY()))==0){
 			return true;
 		}

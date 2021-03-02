@@ -24,6 +24,9 @@ public class Cavalier extends Piece {
     }
     
     public boolean typeDeplacement(Deplacement deplacement){
+		
+		//Le cavalier se déplace en forme de L
+		
 		if((Math.abs(deplacement.getDeplacementX()) == 2 && Math.abs(deplacement.getDeplacementY()) == 1 )| 
 		   (Math.abs(deplacement.getDeplacementX()) == 1 && Math.abs(deplacement.getDeplacementY()) == 2)){
 			   return true;

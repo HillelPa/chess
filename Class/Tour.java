@@ -23,6 +23,9 @@ public class Tour extends Piece {
     }
     
     public boolean typeDeplacement(Deplacement deplacement){
+		
+		//La tour se déplace sur les ligne de n'importe quel nombre de cases
+		
 		if(deplacement.getDeplacementX() * deplacement.getDeplacementY() == 0){
 			return true;
 		}

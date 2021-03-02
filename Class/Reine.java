@@ -23,6 +23,9 @@ public class Reine extends Piece {
     }
     
     public boolean typeDeplacement(Deplacement deplacement){
+		
+		// La reine peut se deplacer de sur les lignes et en diagonale
+		
 		if(Math.abs(deplacement.getDeplacementX()) - Math.abs(deplacement.getDeplacementY()) == 0 | 
 		   deplacement.getDeplacementX() * deplacement.getDeplacementY() == 0){
 			
