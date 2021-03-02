@@ -28,5 +28,6 @@ public abstract class Piece {
 		
 	}
 	
-	//rajouter eventuellement ici une méthode test de déplacement unique à chaque type de piece
+	//méthode donnant le type de déplacement unique à chaque type de piece, retourne true pour chaque case si le deplacement y est possible
+	public abstract boolean typeDeplacement(Deplacement deplacement);
 }

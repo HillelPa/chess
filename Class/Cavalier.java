@@ -17,9 +17,13 @@ public class Cavalier extends Piece {
 
     public String toString(){
         if(couleur){
-            return "cW";
-        }else{
             return "cB";
+        }else{
+            return "cN";
         }
     }
+    
+    public boolean typeDeplacement(Deplacement deplacement){
+		return true; // à changer c'etait juste pour pouvoir créer la classe
+	}
 }

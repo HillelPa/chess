@@ -22,4 +22,8 @@ public class Roi extends Piece {
             return "kB";
         }
     }
+    
+    public boolean typeDeplacement(Deplacement deplacement){
+		return true; // à changer c'etait juste pour pouvoir créer la classe
+	}
 }

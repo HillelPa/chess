@@ -21,4 +21,8 @@ public class Tour extends Piece {
             return "tB";
         }
     }
+    
+    public boolean typeDeplacement(Deplacement deplacement){
+		return true; // à changer c'etait juste pour pouvoir créer la classe
+	}
 }

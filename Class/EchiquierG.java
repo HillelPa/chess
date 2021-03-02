@@ -20,7 +20,7 @@ public class EchiquierG extends JFrame{
 
         //FENETRE
         setBounds(width/2 - larg/2 , height/2 - haut/2, larg, haut);
-        setTitle("Game");
+        setTitle("Jeu d'échec");
         setResizable(false);
         setLayout(null);
         
@@ -38,13 +38,38 @@ public class EchiquierG extends JFrame{
 		int yP = (getHeight()-largP)/2;
 		g.drawImage(T.getImage("150.png"),xP,yP,largP,largP,this);
 
-			for(int i = 0; i<8; i++){
-				for(int j = 0; j<8; j++){
-					if(echiquier[i][j].piece != null){
-						g.drawImage(echiquier[i][j].piece.image,xP + 3 + j*86,yP + 3 +  i*86,80,80,this);
-					}
+		for(int i = 0; i<8; i++){
+			for(int j = 0; j<8; j++){
+				if(echiquier[i][j].piece != null){
+					g.drawImage(echiquier[i][j].piece.image,xP + 3 + j*86,yP + 3 +  i*86,80,80,this);
 				}
-			}	
+			}
+		}	
+		
+		//test de la verification de la possibilité du mouvement d'un pion de manière graphique (à enlever d'ici par la suite)
+		Pion pion1 = new Pion(true);
+		Coordonnee co1 = new Coordonnee(4,6);
+		Coordonnee co2 = new Coordonnee(4,4);
+		Deplacement dep = new Deplacement(co1,co2);
+		
+		boolean [][] mouvement = new boolean [8][8];
+		for (int i=0; i<8; i++){
+			for (int j=0; j<8; j++){
+				co2 = new Coordonnee(j,i);
+				dep = new Deplacement(co1,co2);
+				mouvement[i][j] = pion1.typeDeplacement(dep);
+			}
+		}
+		for(int i = 0; i<8; i++){
+			for(int j = 0; j<8; j++){
+				if(echiquier[i][j].piece == null && mouvement[i][j] == true){
+					g.drawImage(T.getImage("Mouvement_possible.png"),xP + 3 + j*86,yP + 3 +  i*86,80,80,this);
+				}
+			}
+		}
+		
+		//Fin du test
+		
     }
     
     public Case [][] init(){
@@ -84,6 +109,9 @@ public class EchiquierG extends JFrame{
 		for(int j = 0; j<8; j++){
 			echiquier[6][j].piece = new Pion(true);
 		}
+		
+		
+		
 		return echiquier;
 	}
 		 

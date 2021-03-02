@@ -22,4 +22,8 @@ public class Fou extends Piece {
             return "fB";
         }
     }
+    
+    public boolean typeDeplacement(Deplacement deplacement){
+		return true; // à changer c'etait juste pour pouvoir créer la classe
+	}
 }
