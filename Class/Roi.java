@@ -1,37 +1,34 @@
 import java.awt.*;
+import javax.swing.*;
 
-public class Roi extends Piece {
-
+public class Tour extends Piece {
 	
-    public Roi(boolean aCouleur){ // c true : blanc ; c false : noir
-
-        super("Roi",6,aCouleur);
+    public Tour(boolean aCouleur){ 		// c true : blanc ; c false : noir
         
-        Toolkit T = Toolkit.getDefaultToolkit();
+        super("Tour",3,aCouleur);
+        
         if(aCouleur){
-            image = T.getImage("Roi_Blanc.png");
+            image = new JLabel(new ImageIcon("Tour_Blanche.png","Tour blanche"));
         }else{
-            image = T.getImage("Roi_Noir.png");
+            image = new JLabel(new ImageIcon("Tour_Noire.png","Tour blanche"));
         }
     }
 
     public String toString(){
         if(couleur){
-            return "kW";
+            return "tW";
         }else{
-            return "kB";
+            return "tB";
         }
     }
-    
+
     public boolean typeDeplacement(Deplacement deplacement){
-		
-		//Le roi se déplace d'une case dans n'import quel sens
-		
-		if(Math.abs(deplacement.getDeplacementX() * deplacement.getDeplacementY()) <= 1 && 
-			Math.abs(deplacement.getDeplacementX()) - Math.abs(deplacement.getDeplacementY()) <= 1 &&
-			Math.abs(deplacement.getDeplacementX()) - Math.abs(deplacement.getDeplacementY()) >= -1){
-			return true;
-		}
-		return false;
-	}
+
+        //La tour se déplace sur les ligne de n'importe quel nombre de cases
+
+        if(deplacement.getDeplacementX() * deplacement.getDeplacementY() == 0){
+            return true;
+        }
+        return false;
+    }
 }
