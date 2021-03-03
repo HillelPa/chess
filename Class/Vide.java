@@ -10,4 +10,9 @@ public class Vide extends Piece {
     public String toString(){
         return "VIDE";
     }
+    
+    public boolean typeDeplacement(Deplacement deplacement){
+
+		return false;
+		}
 }

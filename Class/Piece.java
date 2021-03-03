@@ -1,6 +1,7 @@
-import javax.awt.*;
+import java.awt.*;
+import javax.swing.*;
 
-public abstract class Piece {
+public abstract class Piece extends JFrame {
 	
 	//IMAGE
 	public JLabel image;
