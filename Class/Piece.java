@@ -3,7 +3,7 @@ import java.awt.*;
 public abstract class Piece {
 	
 	//IMAGE
-	public Image image;
+	public JLabel image;
 	
 	//Nom de la piece
 	public String nom;
