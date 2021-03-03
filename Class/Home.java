@@ -27,6 +27,7 @@ public class Home extends JFrame implements MouseListener {
         setResizable(false);
         setLayout(null);
 
+
         //PANEL
         panel = new JPanel();
         panel.setBounds(getX(), getY(), getWidth(), getHeight());
@@ -43,7 +44,6 @@ public class Home extends JFrame implements MouseListener {
         setAlwaysOnTop(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
-
     }
 
     public void paint(Graphics g) {
