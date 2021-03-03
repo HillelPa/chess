@@ -1,4 +1,4 @@
-import java.awt.*;
+import javax.awt.*;
 
 public abstract class Piece {
 	
