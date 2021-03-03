@@ -1,32 +1,35 @@
 import java.awt.*;
 import javax.swing.*;
 
-public class Tour extends Piece {
+public class Roi extends Piece {
+
 	
-    public Tour(boolean aCouleur){ 		// c true : blanc ; c false : noir
-        
-        super("Tour",3,aCouleur);
-        
+    public Roi(boolean aCouleur){ // c true : blanc ; c false : noir
+
+        super("Roi",6,aCouleur);
+
         if(aCouleur){
-            image = new JLabel(new ImageIcon("Tour_Blanche.png","Tour blanche"));
+            image = new JLabel(new ImageIcon("Roi_Blanc.png"));
         }else{
-            image = new JLabel(new ImageIcon("Tour_Noire.png","Tour blanche"));
+            image = new JLabel(new ImageIcon("Roi_Noir.png"));
         }
     }
 
     public String toString(){
         if(couleur){
-            return "tW";
+            return "kW";
         }else{
-            return "tB";
+            return "kB";
         }
     }
 
     public boolean typeDeplacement(Deplacement deplacement){
 
-        //La tour se déplace sur les ligne de n'importe quel nombre de cases
+        //Le roi se déplace d'une case dans n'import quel sens
 
-        if(deplacement.getDeplacementX() * deplacement.getDeplacementY() == 0){
+        if(Math.abs(deplacement.getDeplacementX() * deplacement.getDeplacementY()) <= 1 &&
+                Math.abs(deplacement.getDeplacementX()) - Math.abs(deplacement.getDeplacementY()) <= 1 &&
+                Math.abs(deplacement.getDeplacementX()) - Math.abs(deplacement.getDeplacementY()) >= -1){
             return true;
         }
         return false;
