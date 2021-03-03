@@ -44,6 +44,7 @@ public class EchiquierG extends JFrame implements MouseListener {
 		grille = new JPanel();
 		grille.setBounds(0, 0, largP, largP);
 		grille.setOpaque(false);
+		
 
 		grille.setLayout(new GridBagLayout());
 
@@ -155,11 +156,33 @@ public class EchiquierG extends JFrame implements MouseListener {
 		//majAff();
 	}
 
-	public void mousePressed(MouseEvent e){
-		//caseSelect = selection(e);
-		//System.out.println(caseSelect);
-		//grille.remove(caseSelect.piece.image);
-		//grille.repaint();
+	public void mousePressed(MouseEvent e) {
+		caseSelect = selection(e);
+		System.out.println(caseSelect);
+		grille.remove(caseSelect.piece.image);
+		grille.repaint();
+		
+		/*test
+		Coordonnee co1 = new Coordonnee(caseSelect.getX(),caseSelect.getY());
+		Coordonnee co2 = new Coordonnee(0,0);
+		Deplacement dep = new Deplacement(co1,co2);
+		
+		boolean [][] mouvement = new boolean [8][8];
+		for (int i=0; i<8; i++){
+			for (int j=0; j<8; j++){
+				co2 = new Coordonnee(j,i);
+				dep = new Deplacement(co1,co2);
+				mouvement[i][j] = Reine1.typeDeplacement(dep);
+			}
+		}
+		for(int i = 0; i<8; i++){
+			for(int j = 0; j<8; j++){
+				if(echiquier[i][j].piece == null && mouvement[i][j] == true){
+					//g.drawImage(T.getImage("Mouvement_possible.png"),xP + 3 + j*86,yP + 3 +  i*86,80,80,this);
+				}
+			}
+		}
+		fin du test*/
 
 	}
 	public void mouseReleased(MouseEvent e){

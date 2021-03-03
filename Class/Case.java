@@ -56,4 +56,14 @@ public class Case implements Comparable<Case>{
 		this.y = (int)(num/8);
 		this.x = num%8;
 	}
+	
+	//obtenir une coordonnee en X
+	public int getX() {
+		return x;
+	}
+	
+	//obtenir une coordonnee en Y
+	public int getY() {
+		return y;
+	}
 }
