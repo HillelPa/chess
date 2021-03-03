@@ -1,16 +1,16 @@
 import java.awt.*;
+import javax.swing.*;
 
 public class Tour extends Piece {
 	
     public Tour(boolean aCouleur){ 		// c true : blanc ; c false : noir
         
         super("Tour",3,aCouleur);
-        Toolkit T = Toolkit.getDefaultToolkit();
         
         if(aCouleur){
-            image = T.getImage("Tour_Blanche.png");
+            image = new JLabel(new ImageIcon("Tour_Blanche.png","Tour blanche"));
         }else{
-            image = T.getImage("Tour_Noire.png");
+            image = new JLabel(new ImageIcon("Tour_Noire.png","Tour blanche"));
         }
     }
 
@@ -21,14 +21,14 @@ public class Tour extends Piece {
             return "tB";
         }
     }
-    
+
     public boolean typeDeplacement(Deplacement deplacement){
-		
-		//La tour se déplace sur les ligne de n'importe quel nombre de cases
-		
-		if(deplacement.getDeplacementX() * deplacement.getDeplacementY() == 0){
-			return true;
-		}
-		return false;
-	}
+
+        //La tour se déplace sur les ligne de n'importe quel nombre de cases
+
+        if(deplacement.getDeplacementX() * deplacement.getDeplacementY() == 0){
+            return true;
+        }
+        return false;
+    }
 }
