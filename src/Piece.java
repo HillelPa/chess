@@ -45,6 +45,10 @@ public abstract class Piece extends JFrame implements Comparable<Piece>{
 			return 0;
 		}
 	}
+	
+	public boolean getCouleur() {
+		return couleur;
+	}
 
 	public void majLocation(){
 		image.setLocation(x*86+3, y*86+3);
