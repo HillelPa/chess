@@ -31,7 +31,8 @@ public class Pion extends Piece {
 		//Ici n'est pas codé le fait de pouvoir manger une pièce en diagonale
 
 		if (deplacement.getDeplacementX() == 0){
-			if(Math.abs(deplacement.getDeplacementY()) == 2 && deplacement.getDepart().getY() == 6){
+			if(Math.abs(deplacement.getDeplacementY()) == 2 && deplacement.getDepart().getY() == 6 ||
+			Math.abs(deplacement.getDeplacementY()) == 2 && deplacement.getDepart().getY() == 1){
 				return true;
 			} else {
 				if(Math.abs(deplacement.getDeplacementY()) == 1){

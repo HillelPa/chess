@@ -1,6 +1,3 @@
-import sun.awt.image.ImageWatched;
-import sun.security.krb5.internal.crypto.NullEType;
-
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
