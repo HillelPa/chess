@@ -31,9 +31,9 @@ public class Pion extends Piece {
 		//Ici n'est pas codé le fait de pouvoir manger une pièce en diagonale
 
 		if (deplacement.getDeplacementX() == 0){
-			if(this.getCouleur()){
+			if(this.couleur){
 				if(deplacement.getDeplacementY() == -2 && deplacement.getDepart().getY() == 6 ||
-				deplacement.getDeplacementY() == -2 && deplacement.getDepart().getY() == 1){
+						deplacement.getDeplacementY() == -2 && deplacement.getDepart().getY() == 1){
 					return true;
 				} else {
 					if(deplacement.getDeplacementY() == -1){
@@ -41,9 +41,9 @@ public class Pion extends Piece {
 					}
 				}
 			}
-			if(!this.getCouleur()){
+			if(!this.couleur){
 				if(deplacement.getDeplacementY() == 2 && deplacement.getDepart().getY() == 6 ||
-				deplacement.getDeplacementY() == 2 && deplacement.getDepart().getY() == 1){
+						deplacement.getDeplacementY() == 2 && deplacement.getDepart().getY() == 1){
 					return true;
 				} else {
 					if(deplacement.getDeplacementY() == 1){

@@ -7,7 +7,6 @@ public class Grille extends JPanel implements MouseListener, MouseMotionListener
     LinkedList<Piece> ech;
     Piece PieceSelect;
     boolean sourisInt;
-    int a = 4;
 
     public Grille(){
         int largP = 688;
@@ -23,6 +22,8 @@ public class Grille extends JPanel implements MouseListener, MouseMotionListener
         aff();
     }
 
+
+
     public LinkedList<Piece> init(){
         LinkedList<Piece> echiquier = new LinkedList<Piece>();
         echiquier.add(new Tour(0,false));
@@ -36,12 +37,6 @@ public class Grille extends JPanel implements MouseListener, MouseMotionListener
         for (int j = 0; j < 8; j++) {
             echiquier.add(new Pion(getNum(1,j),false));
         }
-        
-        for(int i =2; i < 6;i++){
-			for(int j =0; j < 8;j++){
-				echiquier.add(null);
-			}
-		}
 
         echiquier.add(new Tour(56,true));
         echiquier.add(new Cavalier(57,true));
@@ -83,14 +78,17 @@ public class Grille extends JPanel implements MouseListener, MouseMotionListener
     }
 
     public void mouseReleased(MouseEvent e) {
-        boolean b = PieceSelect.typeDeplacement
-                (new Deplacement(new Coordonnee(PieceSelect.x, PieceSelect.y), new Coordonnee(caseX(e), caseY(e))));
+        boolean b = false;
+        try {
+             b = PieceSelect.typeDeplacement
+                    (new Deplacement(new Coordonnee(PieceSelect.x, PieceSelect.y), new Coordonnee(caseX(e), caseY(e))));
+        }catch(NullPointerException er){}
 
         this.removeAll();
         aff();
         repaint();
         try {
-            if (sourisInt && b) {
+            if (sourisInt && b && !caseVide(getNum(e.getX(),e.getY()), ech)){
                 PieceSelect.num = caseX(e) + caseY(e) * 8;
                 PieceSelect.maj();
             }
@@ -112,6 +110,15 @@ public class Grille extends JPanel implements MouseListener, MouseMotionListener
         sourisInt = false;
     }
     public void mouseMoved(MouseEvent e){}
+
+    public boolean caseVide(int i, LinkedList<Piece> ech){
+        for(Piece p : ech){
+            if(p.num == i){
+                return true;
+            }
+        }
+        return false;
+    }
 
     public int caseX(MouseEvent e) {
         return (int) (e.getX() / 86);
@@ -135,18 +142,12 @@ public class Grille extends JPanel implements MouseListener, MouseMotionListener
     public void affPossible(){
         for(int i = 0; i<8; i++){
             for(int j = 0; j<8; j++){
-				System.out.println(ech.get(i*8+j));
-                if(PieceSelect.typeDeplacement(new Deplacement(new Coordonnee(PieceSelect.x, PieceSelect.y), new Coordonnee(i,j)))
-                && !new Deplacement(new Coordonnee(PieceSelect.x, PieceSelect.y), new Coordonnee(i,j)).estNul()) {
-                    
-                    if(ech.get(i*8+j) == null){
+                if(PieceSelect.typeDeplacement(new Deplacement(new Coordonnee(PieceSelect.x, PieceSelect.y), new Coordonnee(i,j)))){
                     JLabel pos = new JLabel(new ImageIcon("Mouvement_possible.png"));
                     pos.setSize(80,80);
                     pos.setLocation(i*86+3, j*86+3);
                     this.add(pos);
                     repaint();
-					}
-                    
                 }
             }
         }

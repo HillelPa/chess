@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.LinkedList;
 import javax.swing.*;
 
 public abstract class Piece extends JFrame implements Comparable<Piece>{
@@ -45,15 +46,24 @@ public abstract class Piece extends JFrame implements Comparable<Piece>{
 			return 0;
 		}
 	}
-	
-	public boolean getCouleur() {
-		return couleur;
-	}
 
 	public void majLocation(){
 		image.setLocation(x*86+3, y*86+3);
 	}
 
+	public int getNum(int i, int j){
+		return 8*i + j;
+	}
+
 	//méthode donnant le type de déplacement unique à chaque type de piece, retourne true pour chaque case si le deplacement y est possible
 	public abstract boolean typeDeplacement(Deplacement deplacement);
+
+	public boolean caseVide(int i, LinkedList<Piece> ech){
+		for(Piece p : ech){
+			if(p.num == i){
+				return true;
+			}
+		}
+		return false;
+	}
 }

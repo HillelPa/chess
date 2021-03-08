@@ -1,6 +1,7 @@
 import java.awt.*;
 import javax.swing.*;
 
+
 public class Fou extends Piece {
 
     public Fou(int aNum,boolean aCouleur){ // c true : blanc ; c false : noir
@@ -26,7 +27,6 @@ public class Fou extends Piece {
     public boolean typeDeplacement(Deplacement deplacement){
 
         //Le fou se déplace sur les diagonales de n'importe quel nombre de cases
-
         if((Math.abs(deplacement.getDeplacementX()))-(Math.abs(deplacement.getDeplacementY()))==0){
             return true;
         }

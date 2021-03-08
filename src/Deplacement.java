@@ -49,8 +49,4 @@ public class Deplacement{
 	public void setArrivee(Coordonnee arriveeA){
 		this.arrivee = arriveeA;
 	}
-	
-	public boolean estNul() {
-		return deplacementX == 0 && deplacementY == 0;
-	}
 }

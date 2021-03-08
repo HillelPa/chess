@@ -65,7 +65,7 @@ public class EchiquierG extends JFrame implements MouseListener, MouseMotionList
 
 	public void mouseClicked(MouseEvent e){}
 	public void mousePressed(MouseEvent e) {}
-	public void mouseReleased(MouseEvent e) { }
+	public void mouseReleased(MouseEvent e) {}
 	public void mouseDragged(MouseEvent e){}
 	public void mouseEntered(MouseEvent e){}
 	public void mouseExited(MouseEvent e){}
