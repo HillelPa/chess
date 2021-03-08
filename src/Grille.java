@@ -85,8 +85,7 @@ public class Grille extends JPanel implements MouseListener, MouseMotionListener
         boolean b = false;
         if(PieceSelect.couleur == tour){
 			try {
-				 b = PieceSelect.typeDeplacement
-						(new Deplacement(new Coordonnee(PieceSelect.x, PieceSelect.y), new Coordonnee(caseX(e), caseY(e))));
+				 b = PieceSelect.typeDeplacement(new Deplacement(new Coordonnee(PieceSelect.x, PieceSelect.y), new Coordonnee(caseX(e), caseY(e))),this.ech);
 			}catch(NullPointerException er){}
 
 			this.removeAll();
@@ -155,7 +154,7 @@ public class Grille extends JPanel implements MouseListener, MouseMotionListener
     public void affPossible(){
         for(int i = 0; i<8; i++){
             for(int j = 0; j<8; j++){
-                if(PieceSelect.typeDeplacement(new Deplacement(new Coordonnee(PieceSelect.x, PieceSelect.y), new Coordonnee(i,j))) && caseVide(j*8+i, PieceSelect.couleur)){
+                if(PieceSelect.typeDeplacement(new Deplacement(new Coordonnee(PieceSelect.x, PieceSelect.y), new Coordonnee(i,j)), this.ech) && caseVide(j*8+i, PieceSelect.couleur)){
                     JLabel pos = new JLabel(new ImageIcon("Mouvement_possible.png"));
                     pos.setSize(80,80);
                     pos.setLocation(i*86+3, j*86+3);

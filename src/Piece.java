@@ -56,7 +56,7 @@ public abstract class Piece extends JFrame implements Comparable<Piece>{
 	}
 
 	//méthode donnant le type de déplacement unique à chaque type de piece, retourne true pour chaque case si le deplacement y est possible
-	public abstract boolean typeDeplacement(Deplacement deplacement);
+	public abstract boolean typeDeplacement(Deplacement deplacement, LinkedList<Piece> ech);
 
 	public boolean caseVide(int i, LinkedList<Piece> ech){
 		for(Piece p : ech){

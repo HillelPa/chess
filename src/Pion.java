@@ -1,5 +1,6 @@
 import java.awt.*;
 import javax.swing.*;
+import java.util.LinkedList;
 	
 public class Pion extends Piece {
 
@@ -25,11 +26,15 @@ public class Pion extends Piece {
 		}
 	}
 
-	public boolean typeDeplacement(Deplacement deplacement){
+	public boolean typeDeplacement(Deplacement deplacement, LinkedList<Piece> ech){
 
 		//Le pion ne peut pas se deplacer sur X et peut se deplacer de 1 ou 2 case en avant selon se position de départ
 		//Ici n'est pas codé le fait de pouvoir manger une pièce en diagonale
 
+		/*for(Piece p : ech){
+			return p.num == 8*deplacement.getArrivee().getX()+deplacement.getArrivee().getY(); 
+		}*/
+		
 		if (deplacement.getDeplacementX() == 0){
 			if(this.couleur){
 				if(deplacement.getDeplacementY() == -2 && deplacement.getDepart().getY() == 6 ||
