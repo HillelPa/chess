@@ -99,7 +99,6 @@ public class Grille extends JPanel implements MouseListener, MouseMotionListener
 					tour = !tour;
 				}
 				PieceSelect.majLocation();
-			
 				
 			} catch (NullPointerException er) {
 			}
