@@ -7,6 +7,7 @@ public class Grille extends JPanel implements MouseListener, MouseMotionListener
     LinkedList<Piece> ech;
     Piece PieceSelect;
     boolean sourisInt;
+    boolean tour = true;
 
     public Grille(){
         int largP = 688;
@@ -69,38 +70,48 @@ public class Grille extends JPanel implements MouseListener, MouseMotionListener
     public void mouseClicked(MouseEvent e){}
 
     public void mousePressed(MouseEvent e) {
-        try {
-            PieceSelect = selection(e);
-            affPossible();
-        } catch (NullPointerException er) {
-            System.out.println("Pas de piece selectionnée");
-        }
+        
+			try {
+				PieceSelect = selection(e);
+				if(PieceSelect.couleur == tour){
+					affPossible();
+				}
+			} catch (NullPointerException er) {
+				System.out.println("Pas de piece selectionnée");
+			}
     }
 
     public void mouseReleased(MouseEvent e) {
         boolean b = false;
-        try {
-             b = PieceSelect.typeDeplacement
-                    (new Deplacement(new Coordonnee(PieceSelect.x, PieceSelect.y), new Coordonnee(caseX(e), caseY(e))));
-        }catch(NullPointerException er){}
+        if(PieceSelect.couleur == tour){
+			try {
+				 b = PieceSelect.typeDeplacement
+						(new Deplacement(new Coordonnee(PieceSelect.x, PieceSelect.y), new Coordonnee(caseX(e), caseY(e))));
+			}catch(NullPointerException er){}
 
-        this.removeAll();
-        aff();
-        repaint();
-        try {
-            if (sourisInt && b && !caseVide(getNum(e.getX(),e.getY()), ech)){
-                PieceSelect.num = caseX(e) + caseY(e) * 8;
-                PieceSelect.maj();
-            }
-            PieceSelect.majLocation();
-        } catch (NullPointerException er) {
-        }
+			this.removeAll();
+			aff();
+			repaint();
+			try {
+				if (sourisInt && b && !caseVide(getNum(e.getX(),e.getY()), ech)){
+					PieceSelect.num = caseX(e) + caseY(e) * 8;
+					PieceSelect.maj();
+				}
+				PieceSelect.majLocation();
+				tour = !tour;
+				
+			} catch (NullPointerException er) {
+			}
+			
+		}
     }
 
     public void mouseDragged(MouseEvent e){
-        try {
-            PieceSelect.image.setLocation(e.getX() - 40, e.getY() - 40);
-        }catch(NullPointerException er){}
+        if(PieceSelect.couleur == tour){
+			try {
+				PieceSelect.image.setLocation(e.getX() - 40, e.getY() - 40);
+			}catch(NullPointerException er){}
+		}
     }
 
     public void mouseEntered(MouseEvent e){
