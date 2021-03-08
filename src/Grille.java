@@ -93,7 +93,7 @@ public class Grille extends JPanel implements MouseListener, MouseMotionListener
 			aff();
 			repaint();
 			try {
-				if (sourisInt && b && !caseVide(getNum(e.getX(),e.getY()), ech)){
+				if (sourisInt && b && caseVide(getNum(caseY(e), caseX(e)), PieceSelect.couleur)){
 					PieceSelect.num = caseX(e) + caseY(e) * 8;
 					PieceSelect.maj();
 				}
@@ -121,14 +121,16 @@ public class Grille extends JPanel implements MouseListener, MouseMotionListener
         sourisInt = false;
     }
     public void mouseMoved(MouseEvent e){}
-
-    public boolean caseVide(int i, LinkedList<Piece> ech){
+	
+	//verif si une case est occupée par la meme couleur
+    public boolean caseVide(int i, boolean coul){
         for(Piece p : ech){
-            if(p.num == i){
-                return true;
+            System.out.println(p);
+            if(p.num == i && p.couleur == coul){
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     public int caseX(MouseEvent e) {
