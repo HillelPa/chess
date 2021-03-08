@@ -96,9 +96,10 @@ public class Grille extends JPanel implements MouseListener, MouseMotionListener
 				if (sourisInt && b && caseVide(getNum(caseY(e), caseX(e)), PieceSelect.couleur)){
 					PieceSelect.num = caseX(e) + caseY(e) * 8;
 					PieceSelect.maj();
+					tour = !tour;
 				}
 				PieceSelect.majLocation();
-				tour = !tour;
+			
 				
 			} catch (NullPointerException er) {
 			}
