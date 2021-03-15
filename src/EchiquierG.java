@@ -11,7 +11,8 @@ public class EchiquierG extends JFrame implements MouseListener, MouseMotionList
 	//LinkedList<Case> ech; // a changer en Piece
 	//Piece[][] ech;
 	LinkedList<Piece> ech;
-
+	
+	JPanel cimetiere;
 	JPanel plateau;
 	JPanel grille;
 
@@ -44,7 +45,8 @@ public class EchiquierG extends JFrame implements MouseListener, MouseMotionList
 		plateau.setLayout(null);
 
 		grille = new Grille(); //toute la partie avec les pieces qui bougent sont dans une autre classe
-
+		cimetiere = new Cimetiere();
+		add(cimetiere);
 		//Image plateau
 		JLabel imgPlateau = new JLabel(new ImageIcon("150.png"));
 		imgPlateau.setBounds(0, 0, largP, largP);
