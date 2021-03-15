@@ -55,12 +55,20 @@ public class Cimetiere extends JPanel implements ActionListener{
 		panelFin.add(restart);
 		
 		if(e.getSource() == giveup_B){			
+<<<<<<< Updated upstream
 			JLabel bravo = new JLabel("Les blancs ont concÃ©dÃ© ! \n Victoire pour les noirs !");			
+=======
+			JLabel bravo = new JLabel("Les blancs ont concédé !"\n "Victoire pour les noirs !");			
+>>>>>>> Stashed changes
 			panelFin.add(bravo);
 			ggFrame.setVisible(true);
 			
 		}else {
+<<<<<<< Updated upstream
 			JLabel bravo = new JLabel("Les noirs ont concÃ©dÃ© ! \n Victoire pour les blancs !");			
+=======
+			JLabel bravo = new JLabel("Les noirs ont concédé !"\n "Victoire pour les blancs !");			
+>>>>>>> Stashed changes
 			panelFin.add(bravo);
 			ggFrame.setVisible(true);
 		}
