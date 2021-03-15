@@ -47,6 +47,7 @@ public class Cimetiere extends JPanel implements ActionListener{
 		restart.setLayout(null);
 		
 		ggFrame = new JFrame("Fin de la partie");
+		ggFrame.setAlwaysOnTop(true);
 		ggFrame.setSize(300,300);
 		ggFrame.add(panelFin);
 		
@@ -54,12 +55,12 @@ public class Cimetiere extends JPanel implements ActionListener{
 		panelFin.add(restart);
 		
 		if(e.getSource() == giveup_B){			
-			JLabel bravo = new JLabel("Les blancs ont concédé !\n Victoire pour les noirs !");			
+			JLabel bravo = new JLabel("Les blancs ont concÃ©dÃ© !\n Victoire pour les noirs !");			
 			panelFin.add(bravo);
 			ggFrame.setVisible(true);
 			
 		}else {
-			JLabel bravo = new JLabel("Les noirs ont concédé !\n Victoire pour les blancs !");			
+			JLabel bravo = new JLabel("Les noirs ont concÃ©dÃ© !\n Victoire pour les blancs !");			
 			panelFin.add(bravo);
 			ggFrame.setVisible(true);
 		}
