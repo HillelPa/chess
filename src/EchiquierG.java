@@ -12,6 +12,7 @@ public class EchiquierG extends JFrame implements MouseListener, MouseMotionList
 
 	JPanel plateau;
 	JPanel grille;
+	JPanel cimetiere;
 
 	Piece PieceSelect;
 	boolean sourisInt;
@@ -39,7 +40,9 @@ public class EchiquierG extends JFrame implements MouseListener, MouseMotionList
 		plateau.setLayout(null);
 
 		grille = new Grille(); //toute la partie avec les pieces qui bougent sont dans une autre classe
-
+		cimetiere = new Cimetiere;
+		add(Cimetiere);
+		
 		//Image plateau
 		JLabel imgPlateau = new JLabel(new ImageIcon("150.png"));
 		imgPlateau.setBounds(0, 0, largP, largP);
