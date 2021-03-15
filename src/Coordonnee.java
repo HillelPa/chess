@@ -15,6 +15,11 @@ public class Coordonnee{
 		coordonneeY = ligne;
 		
 	}
+
+	public Coordonnee(Coordonnee c){
+		coordonneeX = c.coordonneeX;
+		coordonneeY = c.coordonneeY;
+	}
 	
 	//obtenir une coordonnee en X
 	public int getX() {

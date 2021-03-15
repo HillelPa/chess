@@ -42,7 +42,7 @@ public class EchiquierG extends JFrame implements MouseListener, MouseMotionList
 		grille = new Grille(); //toute la partie avec les pieces qui bougent sont dans une autre classe
 		cimetiere = new Cimetiere();
 		add(cimetiere);
-		
+
 		//Image plateau
 		JLabel imgPlateau = new JLabel(new ImageIcon("150.png"));
 		imgPlateau.setBounds(0, 0, largP, largP);

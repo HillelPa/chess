@@ -5,9 +5,9 @@ import javax.swing.*;
 
 public class Fou extends Piece {
 
-    public Fou(int aNum,boolean aCouleur){ // c true : blanc ; c false : noir
+    public Fou(int aIndice, int aNum,boolean aCouleur){ // c true : blanc ; c false : noir
 
-        super(aNum,"Fou",4,aCouleur);
+        super(aIndice, aNum,"Fou",4,aCouleur);
 
         if(aCouleur){
             image = new JLabel(new ImageIcon("Fou_Blanc.png"));
@@ -119,6 +119,10 @@ public class Fou extends Piece {
             eat.add(new Coordonnee(i, j));
 
         return eat;
+    }
+
+    public Piece copyPiece(){
+        return new Fou(indice, num, couleur);
     }
 
 

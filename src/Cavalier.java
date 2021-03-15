@@ -5,9 +5,9 @@ import javax.swing.*;
 public class Cavalier extends Piece {
 	
 	
-    public Cavalier(int aNum,boolean aCouleur){ // c true : blanc ; c false : noir
+    public Cavalier(int aIndice, int aNum,boolean aCouleur){ // c true : blanc ; c false : noir
 
-        super(aNum,"Cavalier",2,aCouleur);
+        super(aIndice, aNum,"Cavalier",2,aCouleur);
 
         if(aCouleur){
             image = new JLabel(new ImageIcon("Cavalier_Blanc.png"));
@@ -123,5 +123,10 @@ public class Cavalier extends Piece {
 
         return eat;
     }
+
+    public Piece copyPiece(){
+        return new Cavalier(indice, num, couleur);
+    }
+
 
 }

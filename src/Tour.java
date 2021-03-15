@@ -4,9 +4,9 @@ import javax.swing.*;
 
 public class Tour extends Piece {
 	
-    public Tour(int aNum,boolean aCouleur){ 		// c true : blanc ; c false : noir
+    public Tour(int aIndice, int aNum,boolean aCouleur){ 		// c true : blanc ; c false : noir
         
-        super(aNum,"Tour",3,aCouleur);
+        super(aIndice, aNum,"Tour",3,aCouleur);
         
         if(aCouleur){
             image = new JLabel(new ImageIcon("Tour_Blanche.png","Tour blanche"));
@@ -106,5 +106,9 @@ public class Tour extends Piece {
             eat.add(new Coordonnee(i, j));
 
         return eat;
+    }
+
+    public Piece copyPiece(){
+        return new Tour(indice, num, couleur);
     }
 }

@@ -5,8 +5,8 @@ import javax.swing.*;
 public class Reine extends Piece {
 	
 	
-    public Reine(int aNum, boolean aCouleur){
-        super(aNum,"Reine",5,aCouleur);
+    public Reine(int aIndice, int aNum, boolean aCouleur){
+        super(aIndice, aNum,"Reine",5,aCouleur);
 
         if(aCouleur){
             image = new JLabel(new ImageIcon("Reine_Blanche.png"));
@@ -189,4 +189,9 @@ public class Reine extends Piece {
 
         return eat;
     }
+
+    public Piece copyPiece(){
+        return new Reine(indice, num, couleur);
+    }
+
 }

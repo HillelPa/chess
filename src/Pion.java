@@ -6,9 +6,9 @@ public class Pion extends Piece {
 
 
 	
-	public Pion(int aNum,boolean aCouleur){ // c true : blanc ; c false : noir
+	public Pion(int aIndice, int aNum,boolean aCouleur){ // c true : blanc ; c false : noir
 	
-	super(aNum,"Pion",0,aCouleur);
+	super(aIndice, aNum,"Pion",0,aCouleur);
 
 	if(aCouleur){
             image = new JLabel(new ImageIcon("Pion_Blanc.png"));
@@ -69,5 +69,9 @@ public class Pion extends Piece {
 				eat.add(new Coordonnee(i, j));
 		}
 		return eat;
+	}
+
+	public Piece copyPiece(){
+		return new Pion(indice, num, couleur);
 	}
 }

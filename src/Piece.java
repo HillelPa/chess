@@ -21,9 +21,12 @@ public abstract class Piece extends JFrame implements Comparable<Piece>{
 	public int y;
 
 	public int num; //numéro de la case entre 0 et 63
+
+	final int indice; //numéro de la piece, valeur fixe !
 	
 	//contructeur de la piece (nom, couleur, coordonnées)
-	public Piece(int aNum, String aNom, int aValeur, boolean aCouleur) {
+	public Piece(int aIndice, int aNum, String aNom, int aValeur, boolean aCouleur) {
+		indice = aIndice;
 		num = aNum;
 		nom = aNom;
 		valeur = aValeur;
@@ -55,10 +58,6 @@ public abstract class Piece extends JFrame implements Comparable<Piece>{
 		return 8*j + i ;
 	}
 
-	// méthode qui créer une liste des Coordonnées de deplacements possibles
-	public abstract LinkedList<Coordonnee> listeDeplacementsPossibles(LinkedList<Piece> ech);
-	public abstract LinkedList<Coordonnee> listEat(LinkedList<Piece> pieces);
-
 	public boolean caseVide(int i, LinkedList<Piece> ech){
 		for(Piece p : ech){
 			if(p.num == i){
@@ -88,4 +87,9 @@ public abstract class Piece extends JFrame implements Comparable<Piece>{
 	public String toString(){
 		return "en position "+num;
 	}
+
+	// méthode qui créer une liste des Coordonnées de deplacements possibles
+	public abstract LinkedList<Coordonnee> listeDeplacementsPossibles(LinkedList<Piece> ech);
+	public abstract LinkedList<Coordonnee> listEat(LinkedList<Piece> pieces);
+	public abstract Piece copyPiece();
 }
