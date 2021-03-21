@@ -23,7 +23,10 @@ public abstract class Piece extends JFrame implements Comparable<Piece>{
 	public int num; //numéro de la case entre 0 et 63
 
 	final int indice; //numéro de la piece, valeur fixe !
-	
+
+	boolean roquable;
+
+
 	//contructeur de la piece (nom, couleur, coordonnées)
 	public Piece(int aIndice, int aNum, String aNom, int aValeur, boolean aCouleur) {
 		indice = aIndice;
@@ -31,6 +34,7 @@ public abstract class Piece extends JFrame implements Comparable<Piece>{
 		nom = aNom;
 		valeur = aValeur;
 		couleur = aCouleur;
+		roquable = true;
 		maj();
 		
 	}
