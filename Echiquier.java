@@ -4,10 +4,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.LinkedList;
 
-public class Echiquier extends JFrame /**implements ActionListener, MouseListener, MouseMotionListener**/{
+public class Echiquier extends JFrame implements ActionListener/**, MouseListener, MouseMotionListener**/{
 
     JPanel plateau;
     JPanel grille;
+    JPanel foreground;
     JPanel sideNoir;
     JPanel sideBlanc;
 
@@ -30,6 +31,17 @@ public class Echiquier extends JFrame /**implements ActionListener, MouseListene
     LinkedList<Coordonnee> eat;  //Liste de coordonnees ou on peut manger
 
     Piece PieceSelect;
+
+    //Test coup du berger
+    Timer t;
+    LinkedList<Piece> bergerP = new LinkedList<Piece>();
+    LinkedList<Coordonnee> bergerC = new LinkedList<Coordonnee>();
+    int i;
+    Piece p;
+    Coordonnee c;
+    LinkedList<Coordonnee> aCoups;
+    LinkedList<Coordonnee> aEat;
+
 
     // --------------------- //
 
@@ -66,6 +78,13 @@ public class Echiquier extends JFrame /**implements ActionListener, MouseListene
 
         initGrille(); //toute la partie avec les pieces qui bougent
 
+    /**          Init du 1er plan        **/
+
+    foreground = new JPanel();
+    foreground.setBounds(grille.getBounds());
+    foreground.setOpaque(false);
+
+
     /** Init des side et des attributs **/
 
         initSideNoir(); initSideBlanc(); //cotés
@@ -76,6 +95,7 @@ public class Echiquier extends JFrame /**implements ActionListener, MouseListene
         JLabel imgPlateau = new JLabel(new ImageIcon("150.png"));
         imgPlateau.setBounds(0, 0, largP, largP);
 
+        plateau.add(foreground);
         plateau.add(grille);
         plateau.add(imgPlateau);
 
@@ -85,6 +105,24 @@ public class Echiquier extends JFrame /**implements ActionListener, MouseListene
 
         setAlwaysOnTop(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        //test d'une partie automatique
+        t = new Timer(1000, this);
+        bergerP.add(getIndice(piecesBlancs, 12));
+        bergerP.add(getIndice(piecesNoirs, 12));
+        bergerP.add(getIndice(piecesBlancs, 5));
+        bergerP.add(getIndice(piecesNoirs, 1));
+        bergerP.add(getIndice(piecesBlancs, 3));
+        bergerP.add(getIndice(piecesNoirs, 6));
+        bergerP.add(getIndice(piecesBlancs, 3));
+
+        bergerC.add(new Coordonnee(4, 4));
+        bergerC.add(new Coordonnee(4, 3));
+        bergerC.add(new Coordonnee(2, 4));
+        bergerC.add(new Coordonnee(2, 2));
+        bergerC.add(new Coordonnee(7, 3));
+        bergerC.add(new Coordonnee(5, 2));
+        bergerC.add(new Coordonnee(5, 1));
     }
 
     //Init de la grille (ancien constructeur de grille)
@@ -111,6 +149,7 @@ public class Echiquier extends JFrame /**implements ActionListener, MouseListene
 
         grille.addMouseListener(new MouseAdapter() {
             public void mousePressed (MouseEvent e) {
+                //t.start();
                 mousePressedGrille(e);
             }
             public void mouseReleased(MouseEvent e){
@@ -175,12 +214,12 @@ public class Echiquier extends JFrame /**implements ActionListener, MouseListene
                 PieceSelect = selection(e);
                 coups = PieceSelect.listeDeplacementsPossibles(totPieces);
                 eat = PieceSelect.listEat(totPieces);
-                removeCoupsEchecs();
-
-                if (PieceSelect.couleur == tour) {
+                removeCoupsEchecs(PieceSelect);
                     affPossible();
                     affEat();
-                }
+                    foreground.add(PieceSelect.image);
+                    grille.remove(PieceSelect.image);
+
             } catch (NullPointerException er) {
                 System.out.println("SELECTIONNEZ UNE PIECE " + tour);
             }
@@ -200,6 +239,25 @@ public class Echiquier extends JFrame /**implements ActionListener, MouseListene
                 PieceSelect.image.setLocation(e.getX() - 40, e.getY() - 40);
                 grille.repaint();
             } catch (NullPointerException er) {
+            }
+        }
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == t) {
+            try {
+                p = bergerP.get(i);
+                c = bergerC.get(i);
+                aCoups = p.listeDeplacementsPossibles(totPieces);
+                aEat = p.listEat(totPieces);
+                move(p, c, aCoups, aEat);
+
+                i++;
+
+            } catch (IndexOutOfBoundsException er) {
+                System.out.println("LES " + !tour + " ONT GAGNE");
+                finie = true;
+                t.stop();
             }
         }
     }
@@ -297,6 +355,10 @@ public class Echiquier extends JFrame /**implements ActionListener, MouseListene
                 p.num = c.getX() + c.getY() * 8;
                 p.maj();
                 majTot();
+                p.majLocation();
+                dame(p);
+                p.roquable = false;
+
                 tour = !p.couleur;
                 tourInt = tour ? 1 : 0;
                 if (containsCoor(aEat, c)) {
@@ -307,13 +369,14 @@ public class Echiquier extends JFrame /**implements ActionListener, MouseListene
                     affSide(tourInt);
                 }
 
-                System.out.println("On test mat sur les "+tourInt+" normalement = a "+tour);
                 if (mat(ech[tourInt])) {
                     System.out.println("LES " + !tour + " ONT GAGNE");
                     finie = true;
                 }
             }
 
+            grille.add(PieceSelect.image);
+            foreground.remove(PieceSelect.image);
             p.majLocation();
             majTot();
 
@@ -346,7 +409,7 @@ public class Echiquier extends JFrame /**implements ActionListener, MouseListene
     }
 
     // Methode qui enleve de la liste des coordonnées de mouvements ce qui menent a un echec
-    public void removeCoupsEchecs() {
+    public void removeCoupsEchecs(Piece p) {
 
         boolean b = true;
         LinkedList<Coordonnee> toRemove = new LinkedList<Coordonnee>();
@@ -354,7 +417,7 @@ public class Echiquier extends JFrame /**implements ActionListener, MouseListene
 
             LinkedList<Piece> pieces = copyP(ech[tourInt]);
 
-            Piece sel = getIndice(pieces, PieceSelect.indice);
+            Piece sel = getIndice(pieces, p.indice);
             sel.num = c.getX() + c.getY() * 8;
             sel.maj();
 
@@ -369,7 +432,7 @@ public class Echiquier extends JFrame /**implements ActionListener, MouseListene
             LinkedList<Piece> pieces = copyP(ech[tourInt]);
             LinkedList<Piece> piecesAdv = copyP(ech[(tourInt + 1) % 2]);
 
-            Piece sel = getIndice(pieces, PieceSelect.indice);
+            Piece sel = getIndice(pieces, p.indice);
             sel.num = c.getX() + c.getY() * 8;
             sel.maj();
 
@@ -407,6 +470,7 @@ public class Echiquier extends JFrame /**implements ActionListener, MouseListene
         if (containsCoor(eats, new Coordonnee(getIndice(piecesTest, 4).x, getIndice(piecesTest, 4).y))) {
             return true;
         }
+
         return false;
     }
 
@@ -417,24 +481,32 @@ public class Echiquier extends JFrame /**implements ActionListener, MouseListene
             coups = p.listeDeplacementsPossibles(totPieces);
             eat = p.listEat(totPieces);
             try {
-                removeCoupsEchecs();
+                removeCoupsEchecs(p);
             } catch (NullPointerException er) {
             }
-            System.out.println(p);
-            System.out.println("coups : "+coups);
-            System.out.println("eat : "+eat);
 
             totMove.addAll(coups);
             totMove.addAll(eat);
-            System.out.println("-----");
-
         }
 
-        System.out.println("Nombres de coups "+totMove.size());
         if (totMove.size() == 0)
             return true;
         else
             return false;
+    }
+
+    //transforme un pion en dame si il atteint le bord adverse
+    public void dame(Piece p){
+        if(p instanceof Pion){
+            if((p.couleur == true && p.y == 0) || (p.couleur == false && p.y == 7)){
+                int couleur = p.couleur ? 1 : 0;
+                ech[couleur].remove(p);
+                Piece newP = new Reine(p.indice, p.num, p.couleur);
+                newP.majLocation();
+                PieceSelect = newP;
+                ech[couleur].add(newP);
+            }
+        }
     }
 
     //methodes pour obtenir un piece dans une liste :
@@ -463,7 +535,6 @@ public class Echiquier extends JFrame /**implements ActionListener, MouseListene
         }
         return pieceCopy;
     }
-
 
    /** FIN DES METHODES UTILISEES PAR LA GRILLE **/
 
