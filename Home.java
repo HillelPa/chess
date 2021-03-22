@@ -1,5 +1,7 @@
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.event.*;
 import java.awt.Desktop;
 import java.io.IOException;
@@ -7,7 +9,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 
-public class Home extends JFrame implements ActionListener {
+public class Home extends JFrame implements ActionListener, ChangeListener {
 
     JPanel panel;
     JLabel img;
@@ -15,6 +17,13 @@ public class Home extends JFrame implements ActionListener {
     JButton btnRules;
     JButton btnSettings;
     Echiquier ech;
+    int time = 1200000;
+
+    // Attributs de la fenetre settings
+
+    JPanel panelSet;
+    JSlider slider;
+    JLabel temps;
 
     public Home() {
 
@@ -65,11 +74,11 @@ public class Home extends JFrame implements ActionListener {
         setAlwaysOnTop(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
-        ech = new Echiquier();
     }
 
     public void actionPerformed(ActionEvent e){
         if(e.getSource() == btnPlay){
+            ech = new Echiquier(time);
             ech.setVisible(true);
             this.dispose();
         }
@@ -80,8 +89,36 @@ public class Home extends JFrame implements ActionListener {
             }catch(URISyntaxException | IOException er){}
         }
         if(e.getSource() == btnSettings){
-            System.out.println("PARAMÈTRES");
+            JFrame settings = new JFrame("Parametres");
+            settings.setSize(400,300);
+            settings.setLocationRelativeTo(null);
+
+            panelSet = new JPanel();
+            panelSet.setBounds(0,0,400,300);
+            panelSet.setLayout(new GridLayout(5,1));
+
+            temps = new JLabel("Temps : 20 minutes", JLabel.CENTER);
+            temps.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            slider = new JSlider(JSlider.HORIZONTAL, 5, 50, 20);
+            slider.addChangeListener(this);
+            slider.setMajorTickSpacing(15);
+            slider.setMinorTickSpacing(5);
+            slider.setPaintTicks(true);
+            slider.setPaintLabels(true);
+
+            panelSet.add(temps);
+            panelSet.add(slider);
+
+            settings.add(panelSet);
+            settings.setAlwaysOnTop(true);
+            settings.setVisible(true);
         }
+    }
+
+    public void stateChanged(ChangeEvent e) {
+        temps.setText("Temps : "+slider.getValue()+" minutes");
+        time = slider.getValue()*60000;
     }
 
 public static void main (String [] args){
