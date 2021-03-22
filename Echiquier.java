@@ -50,12 +50,19 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
     JPanel cimetiereNoir;
     JPanel cimetiereBlanc;
     JPanel [] cimetieres = new JPanel [2];
+    Timer timerW;
+    Timer timerB;
+    Timer [] timer = new Timer [2]; // 0 : timerB 1 : timerW
+    JLabel chronoW;
+    JLabel chronoB;
+    double tempsB;
+    double tempsW;
 
     // --------------------- //
 
     /** CONSTRUCTEUR **/
 
-    public Echiquier() {
+    public Echiquier(int temps) {
 
     /** Init de la fenetre **/
         int larg = 1400;
@@ -87,9 +94,11 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
 
     /** Init des side et des attributs **/
 
-        initSideNoir(); initSideBlanc(); //cotés
+        initSideNoir(temps); initSideBlanc(temps); //cotés
         cimetieres[0] = cimetiereNoir;
         cimetieres[1] = cimetiereBlanc;
+        timer[0] = timerB;
+        timer[1] = timerW;
 
         //Image plateau
         JLabel imgPlateau = new JLabel(new ImageIcon("150.png"));
@@ -149,7 +158,7 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
 
         grille.addMouseListener(new MouseAdapter() {
             public void mousePressed (MouseEvent e) {
-                //t.start();
+                t.start();
                 mousePressedGrille(e);
             }
             public void mouseReleased(MouseEvent e){
@@ -167,7 +176,7 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
     }
 
     //Init du side gauche (ancien constructeur de Side)
-    public void initSideNoir(){
+    public void initSideNoir(int temps){
         sideNoir = new JPanel();
         sideNoir.setLocation(0,0);
         sideNoir.setSize(320, 800);
@@ -181,13 +190,23 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
         cimetiereNoir.setOpaque(false);
         cimetiereNoir.setLayout(null);
 
+        timerB = new Timer(1000,this);
+        tempsB = temps;
+        int sec = (int)(tempsB/1000 % 60);
+        int min = (int)(tempsB/60000);
+        chronoB = new JLabel(min+" : "+sec, SwingConstants.CENTER);
+
+        chronoB.setFont(new Font("maPolice",Font.BOLD, 50));
+        chronoB.setBounds(0,50,320,100);
+
+        sideNoir.add(chronoB);
         sideNoir.add(cimetiereNoir);
         affSide(1);
         sideNoir.add(fond);
     }
 
     //Init du side droit
-    public void initSideBlanc(){
+    public void initSideBlanc(int temps){
         sideBlanc = new JPanel();
         sideBlanc.setLocation(1080,0);
         sideBlanc.setSize(320, 800);
@@ -201,6 +220,16 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
         cimetiereBlanc.setOpaque(false);
         cimetiereBlanc.setLayout(null);
 
+        timerW = new Timer(1000,this);
+        tempsW = temps;
+        int sec = (int)(tempsB/1000 % 60);
+        int min = (int)(tempsB/60000);
+        chronoW = new JLabel(min+" : "+sec, SwingConstants.CENTER);
+        chronoW.setFont(new Font("maPolice",Font.BOLD, 50));
+        chronoW.setBounds(0,50,320,100);
+
+        sideBlanc.add(chronoW);
+
         sideBlanc.add(cimetiereBlanc);
         affSide(0);
         sideBlanc.add(fond);
@@ -211,6 +240,7 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
     public void mousePressedGrille(MouseEvent e) {
         if(!finie) {
             try {
+                //timer[tourInt].start();
                 PieceSelect = selection(e);
                 coups = PieceSelect.listeDeplacementsPossibles(totPieces);
                 eat = PieceSelect.listEat(totPieces);
@@ -244,6 +274,29 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
     }
 
     public void actionPerformed(ActionEvent e) {
+
+        int sec, min;
+        if(e.getSource() == timerB){
+            tempsB -= timerB.getDelay();
+            sec = (int)(tempsB/1000 % 60);
+            min = (int)(tempsB/60000);
+            chronoB.setText(min+" : " +sec);
+        }
+
+        if(e.getSource() == timerW){
+            tempsW -= timerW.getDelay();
+            sec = (int)(tempsW/1000 % 60);
+            min = (int)(tempsW/60000);
+            chronoW.setText(min+" : " +sec);
+        }
+        if(tempsB <= 0)
+            new WindowWin(true);
+        if(tempsW <= 0)
+            new WindowWin(false);
+
+
+        /** POUR LE COUP DU BERGER **/
+
         if (e.getSource() == t) {
             try {
                 p = bergerP.get(i);
@@ -361,6 +414,11 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
 
                 tour = !p.couleur;
                 tourInt = tour ? 1 : 0;
+
+                timer[(tourInt+1)%2].stop();
+                timer[tourInt].start();
+
+
                 if (containsCoor(aEat, c)) {
                     Piece mangee = getParCase(ech[tourInt], getNum(c.getX(), c.getY()));
                     ech[tourInt].remove(mangee);
@@ -371,6 +429,7 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
 
                 if (mat(ech[tourInt])) {
                     System.out.println("LES " + !tour + " ONT GAGNE");
+                    new WindowWin(!tour);
                     finie = true;
                 }
             }
