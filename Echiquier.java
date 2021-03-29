@@ -33,6 +33,8 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
     Piece PieceSelect;
 
     //Test coup du berger
+    
+    
     Timer t;
     LinkedList<Piece> bergerP = new LinkedList<Piece>();
     LinkedList<Coordonnee> bergerC = new LinkedList<Coordonnee>();
@@ -41,6 +43,7 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
     Coordonnee c;
     LinkedList<Coordonnee> aCoups;
     LinkedList<Coordonnee> aEat;
+    
 
 
     // --------------------- //
@@ -70,7 +73,7 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
 
         setSize(larg, haut);
         setLocationRelativeTo(null);
-        setTitle("Game");
+        setTitle("Partie d'échecs");
         setResizable(false);
         setLayout(null);
 
@@ -87,9 +90,9 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
 
     /**          Init du 1er plan        **/
 
-    foreground = new JPanel();
-    foreground.setBounds(grille.getBounds());
-    foreground.setOpaque(false);
+		foreground = new JPanel();
+		foreground.setBounds(grille.getBounds());
+		foreground.setOpaque(false);
 
 
     /** Init des side et des attributs **/
@@ -132,6 +135,7 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
         bergerC.add(new Coordonnee(7, 3));
         bergerC.add(new Coordonnee(5, 2));
         bergerC.add(new Coordonnee(5, 1));
+        
     }
 
     //Init de la grille (ancien constructeur de grille)
@@ -158,7 +162,7 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
 
         grille.addMouseListener(new MouseAdapter() {
             public void mousePressed (MouseEvent e) {
-                t.start();
+                //t.start();
                 mousePressedGrille(e);
             }
             public void mouseReleased(MouseEvent e){
