@@ -32,9 +32,12 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
 
     Piece PieceSelect;
 
+    JTextArea coupsJouees;
+    JScrollPane ascenseur;
+
+    int numCoup = 0;
+
     //Test coup du berger
-    
-    
     Timer t;
     LinkedList<Piece> bergerP = new LinkedList<Piece>();
     LinkedList<Coordonnee> bergerC = new LinkedList<Coordonnee>();
@@ -43,7 +46,6 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
     Coordonnee c;
     LinkedList<Coordonnee> aCoups;
     LinkedList<Coordonnee> aEat;
-    
 
 
     // --------------------- //
@@ -58,8 +60,10 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
     Timer [] timer = new Timer [2]; // 0 : timerB 1 : timerW
     JLabel chronoW;
     JLabel chronoB;
+    JLabel [] chrono = new JLabel [2]; // 0 = chronoB, 1 : chronoW
     double tempsB;
     double tempsW;
+    double [] time = new double [2];  // O : tempsB, 1 = tempsW
 
     // --------------------- //
 
@@ -73,9 +77,16 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
 
         setSize(larg, haut);
         setLocationRelativeTo(null);
-        setTitle("Partie d'échecs");
+        setTitle("Game");
         setResizable(false);
         setLayout(null);
+
+        coupsJouees = new JTextArea();
+        coupsJouees.setEditable(false);
+        ascenseur = new JScrollPane(coupsJouees);
+        ascenseur.setBounds(400,30,600,40);
+
+        add(ascenseur);
 
     /** Init de l'image du plateau **/
 
@@ -90,9 +101,9 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
 
     /**          Init du 1er plan        **/
 
-		foreground = new JPanel();
-		foreground.setBounds(grille.getBounds());
-		foreground.setOpaque(false);
+    foreground = new JPanel();
+    foreground.setBounds(grille.getBounds());
+    foreground.setOpaque(false);
 
 
     /** Init des side et des attributs **/
@@ -102,6 +113,10 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
         cimetieres[1] = cimetiereBlanc;
         timer[0] = timerB;
         timer[1] = timerW;
+        chrono[0] = chronoB;
+        chrono[1] = chronoW;
+        time[0] = tempsB;
+        time[1] = tempsW;
 
         //Image plateau
         JLabel imgPlateau = new JLabel(new ImageIcon("150.png"));
@@ -135,7 +150,6 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
         bergerC.add(new Coordonnee(7, 3));
         bergerC.add(new Coordonnee(5, 2));
         bergerC.add(new Coordonnee(5, 1));
-        
     }
 
     //Init de la grille (ancien constructeur de grille)
@@ -162,7 +176,7 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
 
         grille.addMouseListener(new MouseAdapter() {
             public void mousePressed (MouseEvent e) {
-                //t.start();
+                //t.start(); //ENLEVER LE COMM POUR LA DEMO DU COUP DU BERGER
                 mousePressedGrille(e);
             }
             public void mouseReleased(MouseEvent e){
@@ -175,7 +189,6 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
                 mouseDraggedGrille(e);
             }
         });
-
         affGrille();
     }
 
@@ -244,10 +257,14 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
     public void mousePressedGrille(MouseEvent e) {
         if(!finie) {
             try {
-                //timer[tourInt].start();
+                timer[tourInt].start();
                 PieceSelect = selection(e);
                 coups = PieceSelect.listeDeplacementsPossibles(totPieces);
                 eat = PieceSelect.listEat(totPieces);
+                if(PieceSelect instanceof Roi){
+                    coups.addAll(listRoques(ech[tourInt], ech[(tourInt+1)%2]));
+                    System.out.println(coups);
+                }
                 removeCoupsEchecs(PieceSelect);
                     affPossible();
                     affEat();
@@ -284,14 +301,16 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
             tempsB -= timerB.getDelay();
             sec = (int)(tempsB/1000 % 60);
             min = (int)(tempsB/60000);
-            chronoB.setText(min+" : " +sec);
+            //chronoB.setText(min+" : " +sec);
+            this.setTitle("C'est aux NOIRS de jouer, il leur reste : "+min+" minutes et "+sec+" secondes");
         }
 
         if(e.getSource() == timerW){
             tempsW -= timerW.getDelay();
             sec = (int)(tempsW/1000 % 60);
             min = (int)(tempsW/60000);
-            chronoW.setText(min+" : " +sec);
+            //chronoW.setText(min+" : " +sec);
+            this.setTitle("C'est aux BLANCS de jouer, il leur reste : "+min+" minutes et "+sec+" secondes");
         }
         if(tempsB <= 0)
             new WindowWin(true);
@@ -401,9 +420,96 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
         }
     }
 
+    public LinkedList<Coordonnee> listRoques(LinkedList<Piece> piecesT, LinkedList<Piece> piecesA){
+
+
+        int d, l; // d : debut pour tester echec, l : limite de la boucle for. PETIT ROQUE
+        int D, L; // pareil mais GRAND ROQUE
+
+        Coordonnee c, C;
+
+        if(piecesT.get(0).couleur){
+            d = 60;
+            l = 63;
+            c = new Coordonnee(6, 7);
+
+            D = 58;
+            L = 61;
+            C = new Coordonnee(2,7);
+        }else{
+            d = 4;
+            l = 7;
+            c = new Coordonnee(6, 0);
+
+            D = 2;
+            L = 5;
+            C = new Coordonnee(2, 0);
+        }
+
+        LinkedList<Coordonnee> roques = new LinkedList<Coordonnee>();
+        Piece roi = getIndice(piecesT, 4);
+        Piece tourPetit = getIndice(piecesT, 7);
+        Piece tourGrand = getIndice(piecesT, 0);
+
+        LinkedList<Piece> copy = copyP(piecesT);
+        Piece roiTest;
+        Piece tourTest;
+
+        int case1Petit = roi.num +1;
+        int case2Petit = roi.num + 2;
+        int case1Grand = roi.num - 3;
+        int case2Grand = roi.num - 2;
+        int case3Grand = roi.num -1;
+
+        // PETIT ROQUE
+        boolean b3 = true;
+
+        if(roi.roquable && tourPetit.roquable){
+            if(vide(totPieces, case1Petit) && vide(totPieces, case2Petit)){
+                for(int i = d; i < l ; i++) {
+                    roiTest = getIndice(copy, 4);
+                    roiTest.num = i;
+                    roiTest.maj();
+
+                    if (echec(copy, piecesA)) {
+                        b3 = false;
+                        break;
+                    }
+                }
+
+                if(b3){
+                    roques.add(c);
+                }
+            }
+        }
+
+        // GRAND ROQUE
+        b3 = true;
+
+        if(roi.roquable && tourGrand.roquable){
+            if(vide(totPieces, case1Grand) && vide(totPieces, case2Grand) && vide(totPieces, case3Grand)){
+                for(int i = D; i < L ; i++) {
+                    roiTest = getIndice(copy, 4);
+                    roiTest.num = i;
+                    roiTest.maj();
+
+                    if (echec(copy, piecesA)) {
+                        b3 = false;
+                        break;
+                    }
+                }
+                if(b3){
+                    roques.add(C);
+                }
+            }
+        }
+        return roques;
+    }
+
     // Methode pour les mouvements : utile pour que l'ordinateur teste des mouvements
     public void move(Piece p, Coordonnee c, LinkedList<Coordonnee> aCoups, LinkedList<Coordonnee> aEat) {
 
+        boolean roque = false;
         grille.removeAll();
         affGrille();
         grille.repaint();
@@ -414,7 +520,43 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
                 majTot();
                 p.majLocation();
                 dame(p);
+                numCoup++;
+
+                if(p instanceof Roi && p.roquable){
+                    if(c.getX() == 2){
+                        if(c.getY() == 0) {
+                            deplacer(getIndice(piecesNoirs, 0), new Coordonnee(3, 0));
+                        }
+                        if(c.getY() == 7){
+                            deplacer(getIndice(piecesBlancs, 0), new Coordonnee(3, 7));
+                        }
+                        coupsJouees.append(numCoup+". : O-O-O -- ");
+                        roque = true;
+                    }
+                    if(c.getX() == 6) {
+                        if (c.getY() == 0) {
+                            deplacer(getIndice(piecesNoirs, 7), new Coordonnee(5, 0));
+                        }
+                        if(c.getY() == 7){
+                            deplacer(getIndice(piecesBlancs, 7), new Coordonnee(5, 7));
+                        }
+                        coupsJouees.append(numCoup+". : O-O -- ");
+                        roque = true;
+                    }
+                }
                 p.roquable = false;
+
+
+                double tempsAMAJ;
+                if(tour) {
+                    tempsAMAJ = tempsW;
+                }else{
+                    tempsAMAJ = tempsB;
+                }
+                int sec = (int)(tempsAMAJ/1000 % 60);
+                int min = (int)(tempsAMAJ/60000);
+
+                chrono[tourInt].setText(min+" : " +sec);
 
                 tour = !p.couleur;
                 tourInt = tour ? 1 : 0;
@@ -429,6 +571,15 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
                     cim[tourInt].add(mangee);
                     affGrille();
                     affSide(tourInt);
+                    if(!roque)
+                        if(p instanceof Pion){
+                            coupsJouees.append(numCoup+". : "+((Pion) p).toStringX()+""+c.toStringEat()+" -- ");
+                        }else {
+                            coupsJouees.append(numCoup+". : "+p + "" + c.toStringEat()+" -- ");
+                        }
+                }else{
+                    if(!roque)
+                        coupsJouees.append(numCoup+". : "+p+""+c+" -- ");
                 }
 
                 if (mat(ech[tourInt])) {
@@ -440,12 +591,20 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
 
             grille.add(PieceSelect.image);
             foreground.remove(PieceSelect.image);
-            p.majLocation();
+            //p.majLocation();
             majTot();
 
         } catch (NullPointerException er) {
         }
 
+    }
+
+    //deplacer sans les verifications
+    public void deplacer(Piece p, Coordonnee c){
+        p.num = c.getX() + c.getY() * 8;
+        p.maj();
+        majTot();
+        p.majLocation();
     }
 
     //obtenir la piece sur laquelle on clique
@@ -459,6 +618,15 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
             }
         }
         return null;
+    }
+
+    public boolean vide(LinkedList<Piece> l, int aCase){
+        for(Piece p : l){
+            if(p.num == aCase){
+                return false;
+            }
+        }
+        return true;
     }
 
     //obtenir la coordonnee x de la ou on clique
@@ -529,7 +697,6 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
         for (Piece p : piecesAdv) {
             eats.addAll(p.listEat(tot));
         }
-
         if (containsCoor(eats, new Coordonnee(getIndice(piecesTest, 4).x, getIndice(piecesTest, 4).y))) {
             return true;
         }
@@ -537,7 +704,7 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
         return false;
     }
 
-    //verifier si on est mat ATTENTION BUG !!!!
+    //verifier si on est mat
     public boolean mat(LinkedList<Piece> pieces) {
         LinkedList<Coordonnee> totMove = new LinkedList<Coordonnee>();
         for (Piece p : pieces) {

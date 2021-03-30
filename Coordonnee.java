@@ -48,7 +48,19 @@ public class Coordonnee{
 	}
 
 	public String toString(){
-		return  coordonneeX +" : "+coordonneeY;
+
+		char x = (char)(coordonneeX + 'a');
+		int y = 8 - coordonneeY;
+
+		return  x+""+y;
+	}
+
+	public String toStringEat(){
+
+		char x = (char)(coordonneeX + 'a');
+		int y = 8 - coordonneeY;
+
+		return  "x"+x+""+y;
 	}
 
 	

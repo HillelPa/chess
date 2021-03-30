@@ -20,11 +20,12 @@ public class Pion extends Piece {
 
 
 	public String toString(){
-		if(couleur){
-			return "pW " +super.toString();
-		}else{
-			return "pB " +super.toString();
-		}
+	return "";
+	}
+
+	public String toStringX(){
+		char X = (char)(x + 'a');
+		return X+"";
 	}
 
 	// méthode qui créer une liste des Coordonnées de deplacements possibles
@@ -36,19 +37,21 @@ public class Pion extends Piece {
 			j = y - 1;
 				if (caseVide(getNum(i, j), ech) && i < 8 && i >= 0 && j < 8 && j >= 0) {
 					coups.add(new Coordonnee(i, j));
-				}
-			j = y - 2;
-				if (y == 6 && caseVide(getNum(i, j), ech)) {
-					coups.add(new Coordonnee(i, j));
+					j = y - 2;
+					if (y == 6 && caseVide(getNum(i, j), ech)) {
+						coups.add(new Coordonnee(i, j));
+					}
 				}
 		}else{
 			j = y + 1;
 				if (caseVide(getNum(i, j), ech) && i < 8 && i >= 0 && j < 8 && j >= 0) {
 					coups.add(new Coordonnee(i, j));
-				}
-			j = y + 2;
-				if (y == 1 && caseVide(getNum(i, j), ech)) {
-					coups.add(new Coordonnee(i, j));
+
+					j = y + 2;
+					if (y == 1 && caseVide(getNum(i, j), ech)) {
+						coups.add(new Coordonnee(i, j));
+					}
+
 				}
 			}
 	return coups;

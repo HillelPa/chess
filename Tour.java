@@ -3,11 +3,10 @@ import java.util.LinkedList;
 import javax.swing.*;
 
 public class Tour extends Piece {
-	
+
     public Tour(int aIndice, int aNum,boolean aCouleur){ 		// c true : blanc ; c false : noir
         
         super(aIndice, aNum,"Tour",3,aCouleur);
-        
         if(aCouleur){
             image = new JLabel(new ImageIcon("Tour_Blanche.png","Tour blanche"));
         }else{
@@ -18,9 +17,27 @@ public class Tour extends Piece {
 
     public String toString(){
         if(couleur){
-            return "tW " +super.toString();
+            return "♖";
         }else{
-            return "tB " +super.toString();
+            return "♜";
+        }
+    }
+
+    public String toStringX(){
+        char X = (char)(x + 'a');
+        if(couleur){
+            return "♖"+X;
+        }else{
+            return "♜"+X;
+        }
+    }
+
+    public String toStringY(){
+        int Y = 8 - y;
+        if(couleur){
+            return "♖"+Y;
+        }else{
+            return "♜"+Y;
         }
     }
 

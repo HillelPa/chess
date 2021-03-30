@@ -25,9 +25,9 @@ public class Fou extends Piece {
 
     public String toString(){
         if(couleur){
-            return "fW " +super.toString();
+            return "♗";
         }else{
-            return "fB " +super.toString();
+            return "♝";
         }
     }
 

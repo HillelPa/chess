@@ -20,9 +20,27 @@ public class Cavalier extends Piece {
 
     public String toString(){
         if(couleur){
-            return "cW " +super.toString();
+            return "♘";
         }else{
-            return "cB " +super.toString();
+            return "♞";
+        }
+    }
+
+    public String toStringX(){
+        char X = (char)(x + 'a');
+        if(couleur){
+            return "♘"+X;
+        }else{
+            return "♞"+X;
+        }
+    }
+
+    public String toStringY(){
+        int Y = 8 - y;
+        if(couleur){
+            return "♘"+Y;
+        }else{
+            return "♞"+Y;
         }
     }
 

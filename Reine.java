@@ -18,9 +18,9 @@ public class Reine extends Piece {
 
     public String toString(){
         if(couleur){
-            return "qW " +super.toString();
+            return "♕";
         }else{
-            return "qB " +super.toString();
+            return "♛";
         }
     }
 

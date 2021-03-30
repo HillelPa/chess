@@ -4,11 +4,10 @@ import javax.swing.*;
 
 public class Roi extends Piece {
 
-	
+
     public Roi(int aIndice, int aNum,boolean aCouleur){ // c true : blanc ; c false : noir
 
         super(aIndice,aNum,"Roi",6,aCouleur);
-
         if(aCouleur){
             image = new JLabel(new ImageIcon("Roi_Blanc.png"));
         }else{
@@ -20,9 +19,9 @@ public class Roi extends Piece {
 
     public String toString(){
         if(couleur){
-            return "kW " +super.toString();
+            return "♔";
         }else{
-            return "kB " +super.toString();
+            return "♚";
         }
     }
 
@@ -50,7 +49,6 @@ public class Roi extends Piece {
         }
         return eat;
     }
-
     public Piece copyPiece(){
         return new Roi(indice, num, couleur);
     }
@@ -60,4 +58,5 @@ public class Roi extends Piece {
         p.image = image;
         return p;
     }
+
 }
