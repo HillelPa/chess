@@ -21,6 +21,7 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
     JPanel foreground;
     JPanel sideNoir;
     JPanel sideBlanc;
+    boolean tps = false;
 
     //Attributs utilisés par tous les panels
     LinkedList<Piece> piecesBlancs;
@@ -361,9 +362,9 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
             this.setTitle("C'est aux BLANCS de jouer, il leur reste : " + min + " minutes et " + sec + " secondes");
         }
         if (tempsB <= 0)
-            new WindowWin(true);
+            new WindowWin(true,tps);
         if (tempsW <= 0)
-            new WindowWin(false);
+            new WindowWin(false,tps);
 
 
         /** INVERSER LE PLATEAU **/
@@ -675,6 +676,7 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
 
                 if (mat(ech[tourInt])) {
                     System.out.println("LES " + !tour + " ONT GAGNE");
+                    tps = true;
                     new WindowWin(!tour);
                     finie = true;
                 }
