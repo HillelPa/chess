@@ -24,6 +24,7 @@ public class Home extends JFrame implements ActionListener, ChangeListener {
     JPanel panelSet;
     JSlider slider;
     JLabel temps;
+    JLabel imgSettings;
 
     public Home() {
 
@@ -95,7 +96,10 @@ public class Home extends JFrame implements ActionListener, ChangeListener {
 
             panelSet = new JPanel();
             panelSet.setBounds(0,0,400,300);
-            panelSet.setLayout(new GridLayout(5,1));
+            //panelSet.setLayout(new GridLayout(5,1));
+		
+	    imgSettings = new JLabel(new ImageIcon("parametres.jpg"));
+	    imgSettings.setBounds(0,0,400,300);
 
             temps = new JLabel("Temps : 20 minutes", JLabel.CENTER);
             temps.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -106,7 +110,8 @@ public class Home extends JFrame implements ActionListener, ChangeListener {
             slider.setMinorTickSpacing(5);
             slider.setPaintTicks(true);
             slider.setPaintLabels(true);
-
+            
+	    panelSet.add(imgSettings);
             panelSet.add(temps);
             panelSet.add(slider);
 
