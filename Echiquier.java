@@ -83,6 +83,9 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
     JLabel chronoB;
     JLabel[] chrono = new JLabel[2]; // 0 = chronoB, 1 : chronoW
     JButton sens = new JButton("Inverser");
+    JButton giveUpN = new JButton();
+    JButton giveUpB = new JButton();
+    
     double tempsB;
     double tempsW;
     double[] time = new double[2];  // O : tempsB, 1 = tempsW
@@ -115,6 +118,20 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
         sens.setBounds(10, 30, 50, 50);
         sens.addActionListener(this);
         add(sens);
+        
+        giveUpB.setBounds(10, 80, 50, 50);
+        giveUpB.setOpaque(false);
+        giveUpB.setContentAreaFilled(false);
+        giveUpB.setBorderPainted(false);
+        giveUpB.addActionListener(this);
+        add(giveUpB);
+        
+        giveUpN.setBounds(10, 130, 50, 50);
+        giveUpN.setOpaque(false);
+        giveUpN.setContentAreaFilled(false);
+        giveUpN.setBorderPainted(false);
+        giveUpN.addActionListener(this);
+        add(giveUpN);
 
         /** Init de l'image du plateau **/
 
@@ -361,15 +378,24 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
             //chronoW.setText(min+" : " +sec);
             this.setTitle("C'est aux BLANCS de jouer, il leur reste : " + min + " minutes et " + sec + " secondes");
         }
-        if (tempsB <= 0)
+        if (tempsB == 0) {
+        	tps = true;
             new WindowWin(true,tps);
-        if (tempsW <= 0)
-            new WindowWin(false,tps);
+        }
+        if (tempsW == 0) {
+        	tps = true;
+        	new WindowWin(false,tps);
+        }
+            
 
 
         /** INVERSER LE PLATEAU **/
         if (e.getSource() == sens) {
             tourner();
+        }
+        
+        if (e.getSource() == giveUpB) {
+        	new WindowWin(1);
         }
 
         /** POUR LE COUP DU BERGER **/
@@ -676,8 +702,7 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
 
                 if (mat(ech[tourInt])) {
                     System.out.println("LES " + !tour + " ONT GAGNE");
-                    tps = true;
-                    new WindowWin(!tour);
+                    new WindowWin(!tour,tps);
                     finie = true;
                 }
             }else{

@@ -6,88 +6,92 @@ public class WindowWin extends JFrame implements ActionListener{
 	
 	JButton leave;
 	JButton restart;
-	JPanel back;
-	WindowWin endGame;
+	String s;
+	JLabel mess;
 	
     public WindowWin(){
+    	//On enregistre les dimensions pour avoir une fenêtre adaptable à tous les écrans
     	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     	int width = (int) screenSize.getWidth();
     	int height = (int) screenSize.getHeight();
-
     	
+    	int fenWidth = (int) (width/3.0);
+    	int fenHeight = (int) (height/3.0);
+
+    	//On crée la fenêtre de fin
         new JFrame("FIN DE LA PARTIE");
-        setSize((int)(width /3.0),(int)(height/3.0));
-                
-        back = new JPanel();
-        back.setBounds(-100,-100,this.getWidth()+100,this.getHeight()+100);
+        setSize((int)(fenWidth),fenHeight);
+        setLocationRelativeTo(null);
+        setResizable(false);        
+        setAlwaysOnTop(true);
+        setVisible(true);
+
+        //On ajoute à la fenêtre le fond càd un JPanel sur lequel on va poser les boutons        
+        JPanel back = new JPanel();
+        back.setBounds(-100,-100,fenWidth+100,fenHeight+100);
         back.setBackground(Color.DARK_GRAY);
         back.setLayout(null);
         back.setVisible(true);
+        //add(back);
         
         
         leave = new JButton("Quitter");
-        leave.setBounds(2*(int)(this.getWidth()/3.0),2*(int)(this.getHeight()/3.0),(int)(this.getWidth()/4.0),(int)(this.getHeight()/6.0));
+        leave.setBounds(2*fenWidth,2*fenHeight,(int)(this.getWidth()/4.0),(int)(this.getHeight()/6.0));
         leave.setForeground(Color.DARK_GRAY);
         leave.setBackground(Color.GREEN);
         leave.addActionListener(this);
-        back.add(leave);
+        //add(leave);
         
      
         restart = new JButton("Recommencer");
-        restart.setBounds((int)(this.getWidth()/12.0),2*(int)(this.getHeight()/3.0),(int)(this.getWidth()/4.0),(int)(this.getHeight()/6.0));
+        restart.setBounds((int)(this.getWidth()/12.0),2*fenHeight,(int)(this.getWidth()/4.0),(int)(this.getHeight()/6.0));
         restart.setForeground(Color.DARK_GRAY);
         restart.setBackground(Color.GREEN);
         restart.addActionListener(this);
-        back.add(restart);
+        //back.add(restart);
+                
         
-        add(back);
-        setLocationRelativeTo(null);
-        setResizable(false);
-        
-        setAlwaysOnTop(true);
-
     }
-    
-    public WindowWin(boolean couleur){
+    // Selon le type de fin (mat,tps,abandon) on affiche la fenetre de fin avec un message différent donnant le vainqueur)   
+    public WindowWin(boolean couleur, boolean tps){
+    	WindowWin endGame = new WindowWin();
+    	s = "";
+    	if(tps == true) {
+    		s = "Le temps limite des ";
+            if(!couleur){
+           		s += "Blancs est dépassé, les Noirs ";
+           	}else{
+           		s += "Noirs est dépassé, les Blancs ";
+           	}
+           	s += "ont gagné !";
     	
-        String s = "Echec et mat, les ";
+    	}else{
+        	s = "Echec et mat, les ";
             if(couleur){
                 s += "Blancs ";
             }else{
                 s += "Noirs ";
             }
-        s += "ont gagné !";
-        
+        s += "ont gagné !";        
+    	}
+    	
         System.out.println(s);
-        JLabel mess = new JLabel(s);
-        mess.setBounds(0,0,this.getWidth(),(int)(this.getHeight()/2.0));
-        
-        
-        endGame = new WindowWin(); 
-        endGame.setVisible(true);
-        endGame.add(back);
-        back.add(mess);                
+        mess = new JLabel(s,JLabel.CENTER);
+        endGame.add(mess);
     }
     
-    public WindowWin(boolean couleur,boolean tps){
-
-        String s = "Le temps limite des ";
-            if(!couleur){
-                s += "Blancs est dépassé, les Noirs ";
-            }else{
-                s += "Noirs est dépassé, les Blancs ";
-            }
-        s += "ont gagné !";
-        
-        System.out.println(s);
-    	endGame = new WindowWin();
-    	endGame.setVisible(true);
-        JLabel mess = new JLabel(s);
-        mess.setBounds(0,0,this.getWidth(),(int)(this.getHeight()/2.0));
-        mess.setVisible(true);
-                
+    public WindowWin(int nbr) {
+    	WindowWin endGame = new WindowWin();
+    	if(nbr == 1) {
+    		s = "Les Blancs ont concédé, victoire des Noirs par abandon!";
+    	}else {
+    		s = "Les Noirs ont concédé, victoire des Blancs par abandon!"; 
+    	}
+    	System.out.println(s);
+        mess = new JLabel(s,JLabel.CENTER);
+        endGame.add(mess);
     }
-
+    
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == leave){
 			System.exit(0);

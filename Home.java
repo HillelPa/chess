@@ -53,16 +53,25 @@ public class Home extends JFrame implements ActionListener, ChangeListener {
         img.setBounds(0,-27,this.getWidth(),this.getHeight());
 
         //boutons
-        btnPlay = new JButton("play");
+        btnPlay = new JButton();
         btnPlay.setBounds(75, 212,340, 78 );
+        btnPlay.setOpaque(false);
+        btnPlay.setContentAreaFilled(false);
+        btnPlay.setBorderPainted(false);
         btnPlay.addActionListener(this);
 
         btnRules = new JButton("rules");
         btnRules.setBounds(75, 320,340, 78 );
+        btnRules.setOpaque(false);
+        btnRules.setContentAreaFilled(false);
+        btnRules.setBorderPainted(false);
         btnRules.addActionListener(this);
 
         btnSettings = new JButton("set");
         btnSettings.setBounds(420, 630,60, 60 );
+        btnSettings.setOpaque(false);
+        btnSettings.setContentAreaFilled(false);
+        btnSettings.setBorderPainted(false);
         btnSettings.addActionListener(this);
 
         panel.add(img);
