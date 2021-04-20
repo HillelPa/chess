@@ -863,6 +863,7 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
                 newP.majLocation();
                 PieceSelect = newP;
                 ech[couleur].add(newP);
+                majTot();
                 affGrille();
             }
         }
