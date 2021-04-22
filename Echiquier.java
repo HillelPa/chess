@@ -54,6 +54,8 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
     int numCoup = 0;
     boolean sensP = true;
     int sensInt = sensP ? 1 : 0;
+    
+    int nbr;
 
     //Test coup du berger
     Timer t;
@@ -115,18 +117,18 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
 
         add(ascenseur);
 
-        sens.setBounds(10, 30, 50, 50);
+        sens.setBounds(10,30,50,50);
         sens.addActionListener(this);
         add(sens);
         
-        giveUpB.setBounds(10, 80, 50, 50);
+        giveUpB.setBounds(95, this.getHeight()-175, 135, 65);
         giveUpB.setOpaque(false);
         giveUpB.setContentAreaFilled(false);
         giveUpB.setBorderPainted(false);
         giveUpB.addActionListener(this);
         add(giveUpB);
         
-        giveUpN.setBounds(10, 130, 50, 50);
+        giveUpN.setBounds(this.getWidth()-225, this.getHeight()-175, 135, 65);
         giveUpN.setOpaque(false);
         giveUpN.setContentAreaFilled(false);
         giveUpN.setBorderPainted(false);
@@ -379,12 +381,14 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
             this.setTitle("C'est aux BLANCS de jouer, il leur reste : " + min + " minutes et " + sec + " secondes");
         }
         if (tempsB == 0) {
+        	nbr = 0;
         	tps = true;
-            new WindowWin(true,tps);
+            new WindowWin(true,tps,nbr);
         }
         if (tempsW == 0) {
+        	nbr = 0;
         	tps = true;
-        	new WindowWin(false,tps);
+        	new WindowWin(false,tps,nbr);
         }
             
 
@@ -395,7 +399,12 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
         }
         
         if (e.getSource() == giveUpB) {
-        	new WindowWin(1);
+        	nbr = 1;
+        	new WindowWin(true,tps,nbr);
+        }
+        if (e.getSource() == giveUpN) {
+        	nbr = 1;
+        	new WindowWin(false,tps,nbr);
         }
 
         /** POUR LE COUP DU BERGER **/
@@ -702,7 +711,8 @@ public class Echiquier extends JFrame implements ActionListener/**, MouseListene
 
                 if (mat(ech[tourInt])) {
                     System.out.println("LES " + !tour + " ONT GAGNE");
-                    new WindowWin(!tour,tps);
+                    nbr = 0;
+                    new WindowWin(!tour,tps, nbr);
                     finie = true;
                 }
             }else{
