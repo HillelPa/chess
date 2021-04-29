@@ -1,6 +1,7 @@
-import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class WindowWin extends JFrame implements ActionListener{
 	
@@ -9,9 +10,13 @@ public class WindowWin extends JFrame implements ActionListener{
 	String s;
 	JPanel back;
 	JLabel mess;
+	Echiquier ech;
 	
-    public WindowWin(boolean couleur, boolean tps, int nbr){
-    	//On enregistre les dimensions pour avoir une fenêtre adaptable à tous les écrans
+    public WindowWin(boolean couleur, boolean tps, int nbr, Echiquier aEch){
+
+        ech = aEch;
+
+    	//On enregistre les dimensions pour avoir une fenï¿½tre adaptable ï¿½ tous les ï¿½crans
     	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     	int width = (int) screenSize.getWidth();
     	int height = (int) screenSize.getHeight();
@@ -21,11 +26,12 @@ public class WindowWin extends JFrame implements ActionListener{
     	
     	Color kaki = new Color(135,164,91);
 
-    	//On crée la fenêtre de fin
+    	//On creer la fenetre de fin
         new JFrame("FIN DE LA PARTIE");
         setSize((int)(fenWidth),(int)(fenHeight));
+        setTitle("Fin de la Partie");
 
-        //On ajoute à la fenêtre le fond càd un JPanel sur lequel on va poser les boutons        
+        //On ajoute a la fenetre le fond c-Ã -d un JPanel sur lequel on va poser les boutons
         back = new JPanel();
         back.setBounds(-100,-100,fenWidth+100,fenHeight+100);
         back.setLayout(null);
@@ -34,12 +40,11 @@ public class WindowWin extends JFrame implements ActionListener{
         
         JLabel fond = new JLabel();
         fond.setBounds(0,0,this.getWidth(), this.getHeight());
-        fond.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("fond.jpg")).getImage().getScaledInstance(this.getWidth(), this.getHeight(), Image.SCALE_SMOOTH)));
+        fond.setIcon(new ImageIcon(new ImageIcon("fond.jpg").getImage().getScaledInstance(this.getWidth(), this.getHeight(), Image.SCALE_SMOOTH)));
         back.add(fond);
         
         s = victoire(couleur,tps,nbr);
-        System.out.println(s);
-        		
+
         mess = new JLabel(s,JLabel.CENTER);
         mess.setLayout(null);
         mess.setBounds(0,0,(int)(this.getWidth()),(int)(this.getHeight()/4.0));
@@ -49,7 +54,6 @@ public class WindowWin extends JFrame implements ActionListener{
         
         leave = new JButton("Quitter");
         leave.setBounds(2*(int)(this.getWidth()/3.0),2*(int)(this.getHeight()/3.0),(int)(this.getWidth()/4.0),(int)(this.getHeight()/6.0));
-        leave.setForeground(Color.WHITE);
         leave.setBackground(kaki);
         leave.addActionListener(this);
         fond.add(leave);
@@ -57,7 +61,6 @@ public class WindowWin extends JFrame implements ActionListener{
      
         restart = new JButton("Recommencer");
         restart.setBounds((int)(this.getWidth()/12.0),2*(int)(this.getHeight()/3.0),(int)(this.getWidth()/4.0),(int)(this.getHeight()/6.0));
-        restart.setForeground(Color.WHITE);
         restart.setBackground(kaki);
         restart.addActionListener(this);
         fond.add(restart);
@@ -67,20 +70,20 @@ public class WindowWin extends JFrame implements ActionListener{
         setAlwaysOnTop(true);
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                
+
         
     }
-    // Selon le type de fin (mat,tps,abandon) on affiche la fenetre de fin avec un message différent donnant le vainqueur)   
+    // Selon le type de fin (mat,tps,abandon) on affiche la fenetre de fin avec un message diffï¿½rent donnant le vainqueur)   
     public String victoire(boolean couleur, boolean tps, int nbr){
     	s = "";
     	if(tps == true && nbr == 0) {
     		s += "Le temps limite des ";
             if(!couleur){
-           		s += "Blancs est dépassé, les Noirs ";
+           		s += "Blancs est depasse, les Noirs ";
            	}else{
-           		s += "Noirs est dépassé, les Blancs ";
+           		s += "Noirs est depasse, les Blancs ";
            	}
-           	s += "ont gagné !";
+           	s += "ont gagne !";
     	
     	}if(tps == false && nbr ==0){
         	s = "Echec et mat, les ";
@@ -89,12 +92,12 @@ public class WindowWin extends JFrame implements ActionListener{
             }else{
                 s += "Noirs ";
             }
-            s += "ont gagné !"; 
+            s += "ont gagne !";
             
-    	}if(couleur == true && tps == false && nbr == 1   ) {
-    		s = "Les Blancs ont concédé, victoire des Noirs par abandon !";
-    	}if(couleur == false && tps == false && nbr == 1 ) {
-    		s = "Les Noirs ont concédé, victoire des Blancs par abandon !"; 
+    	}if(couleur == false && tps == false && nbr == 1   ) {
+    		s = "Les Blancs ont concede, victoire des Noirs par abandon !";
+    	}if(couleur == true && tps == false && nbr == 1 ) {
+    		s = "Les Noirs ont concede, victoire des Blancs par abandon !";
     	}
     	return s;
     }
@@ -105,6 +108,8 @@ public class WindowWin extends JFrame implements ActionListener{
 			System.exit(0);
 		}
         if(e.getSource() == restart){
+            ech.dispose();
+            this.dispose();
         	new Home();
         }			
 	}
