@@ -13,19 +13,6 @@ import java.util.LinkedList;
 
 public class test {
     public static void main(String[] args) {
-        for (int i = 0; i < 4; i++) {
-            System.out.println(i);
-            try {
-                File musicPath = new File("/Users/HillelPartouche/Desktop/Chess_mini_projet/wrong.wav");
-                AudioInputStream audio = AudioSystem.getAudioInputStream(musicPath);
-                Clip clip = AudioSystem.getClip();
-                clip.open(audio);
-                clip.start();
-
-            } catch (Exception e) {
-                System.out.println("tnul");
-            }
-        }
     }
 }
 

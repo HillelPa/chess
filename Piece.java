@@ -1,6 +1,5 @@
-import java.awt.*;
-import java.util.LinkedList;
 import javax.swing.*;
+import java.util.LinkedList;
 
 public abstract class Piece extends JFrame implements Comparable<Piece>{
 	

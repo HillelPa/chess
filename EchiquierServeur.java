@@ -3,11 +3,22 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.LinkedList;
 
-public class Echiquier extends JFrame implements ActionListener {
+public class EchiquierServeur extends JFrame implements ActionListener
+{
 
     JPanel plateau;
     JPanel grille;
@@ -15,14 +26,26 @@ public class Echiquier extends JFrame implements ActionListener {
     JPanel sideNoir;
     JPanel sideBlanc;
     JPanel centre;
-    boolean tps = false;
+
+    Object objetRecu;
+    char fin = 'f';
+    long tempsAvant, tempsApres;
+    ObjectOutputStream out;
+    ObjectInputStream in;
+    int temps2 = 0;
+
+    ServerSocket sS;
+    Socket s;
+    JButton envoyer;
+
+    Timer t;
+    int temps;
 
     //Attributs utilisés par tous les panels
     LinkedList<Piece> piecesBlancs;
     LinkedList<Piece> piecesNoirs;
     LinkedList<Piece> cimBlancs;
     LinkedList<Piece> cimNoirs;
-    LinkedList<String> deplacements;
     boolean tour = true;
     int tourInt = tour ? 1 : 0; // ligne qui converti un boolean en int : true envoie 1 false envoie 0
     boolean finie = false;
@@ -31,10 +54,8 @@ public class Echiquier extends JFrame implements ActionListener {
     //Attributs utilisés par la grille
 
     JLabel imgPlateau;
-    ImageIcon[] grilles = new ImageIcon[2];
 
-    LinkedList<Piece>[] ech = new LinkedList[2]; // tableau de liste en 0 noirs en 1 blancs (true -> 1 et false -> 0);
-    LinkedList<Piece>[] cim = new LinkedList[2];
+    LinkedList<Piece> [][] ech = new LinkedList[2][2]; // tableau de liste en 0 noirs en 1 blancs (true -> 1 et false -> 0); (x) 0 : pieces 1 : cimetieres
     LinkedList<Piece> totPieces = new LinkedList<Piece>();
 
     LinkedList<Coordonnee> coups; //Liste de coordonnees ou on peut se deplacer
@@ -42,29 +63,13 @@ public class Echiquier extends JFrame implements ActionListener {
 
     Piece PieceSelect;
 
-    JTextArea coupsJouees;
-    JScrollPane ascenseur;
+    MouseAdapter mouseAdapt;
 
     int numCoup = 0;
-    boolean sensP = true;
-    int sensInt = sensP ? 1 : 0;
-
-    int nbr;
-
-    //Test coup du berger
-    Timer t;
-    LinkedList<Piece> bergerP = new LinkedList<Piece>();
-    LinkedList<Coordonnee> bergerC = new LinkedList<Coordonnee>();
-    int i;
-    Piece p;
-    Coordonnee c;
-    LinkedList<Coordonnee> aCoups;
-    LinkedList<Coordonnee> aEat;
-    //Fin coup du berger
+    final boolean sensP = true;
 
     String pathWrong = "wrong.wav";
     String pathRight = "right.wav";
-
     Clip clip;
 
     // --------------------- //
@@ -74,22 +79,15 @@ public class Echiquier extends JFrame implements ActionListener {
     JPanel cimetiereNoir;
     JPanel cimetiereBlanc;
     JPanel[] cimetieres = new JPanel[2];
-    Timer timerW;
-    Timer timerB;
-    Timer[] timer = new Timer[2]; // 0 : timerB 1 : timerW
     JLabel chronoW;
     JLabel chronoB;
-    JLabel[] chrono = new JLabel[2]; // 0 = chronoB, 1 : chronoW
-    JLabel auxNoirs;
-    JLabel auxBlancs;
-    JLabel [] aux = new JLabel [2]; // 0 : auxNoirs, 1 : auxBlancs
-    JButton sens = new JButton();
-    JButton giveUpN = new JButton();
-    JButton giveUpB = new JButton();
+    JLabel connex, connect;
+    JLabel [] points = new JLabel[5];
 
     double tempsB;
     double tempsW;
     double[] time = new double[2];  // O : tempsB, 1 = tempsW
+    JButton giveUpB = new JButton();
 
     // --------------------- //
 
@@ -97,7 +95,9 @@ public class Echiquier extends JFrame implements ActionListener {
      * CONSTRUCTEUR
      **/
 
-    public Echiquier(int temps) {
+    public EchiquierServeur(int aTemps) {
+
+        tempsAvant = System.currentTimeMillis();
 
         /** Init de la fenetre **/
         int larg = 1400;
@@ -108,34 +108,6 @@ public class Echiquier extends JFrame implements ActionListener {
         setTitle("Game");
         setResizable(false);
         setLayout(null);
-
-        coupsJouees = new JTextArea();
-        coupsJouees.setEditable(false);
-        ascenseur = new JScrollPane(coupsJouees);
-        ascenseur.setBounds(400, 30, 600, 40);
-        ascenseur.setOpaque(false);
-        ascenseur.setBounds(400, 15, 600, 40);
-
-        add(ascenseur);
-
-        sens.setBounds(727, 35, 35, 42);
-        sens.addActionListener(this);
-        sens.setContentAreaFilled(false);
-        sens.setBorderPainted(false);
-
-        giveUpB.setBounds(95, this.getHeight()-175, 135, 65);
-        giveUpB.setOpaque(false);
-        giveUpB.setContentAreaFilled(false);
-        giveUpB.setBorderPainted(false);
-        giveUpB.addActionListener(this);
-        add(giveUpB);
-
-        giveUpN.setBounds(this.getWidth()-225, this.getHeight()-175, 135, 65);
-        giveUpN.setOpaque(false);
-        giveUpN.setContentAreaFilled(false);
-        giveUpN.setBorderPainted(false);
-        giveUpN.addActionListener(this);
-        add(giveUpN);
 
         /** Init de l'image du plateau **/
 
@@ -158,35 +130,53 @@ public class Echiquier extends JFrame implements ActionListener {
         foreground = new JPanel();
         foreground.setBounds(grille.getBounds());
         foreground.setOpaque(false);
+        foreground.setLayout(null);
+
+        JLabel flou = new JLabel(new ImageIcon("Flou.png"));
+        flou.setBounds(0,0,largP, largP);
+
+        Font maPolice = new Font("maPolice",Font.BOLD, 400);
+
+        connex = new JLabel("Connexion", JLabel.CENTER);
+        connex.setFont(new Font("t", Font.BOLD, 60));
+        connex.setBounds(0,260,688,100);
+
+        connect = new JLabel("Connecté !", JLabel.CENTER);
+        connect.setFont(new Font("t", Font.BOLD, 60));
+        connect.setBounds(0,260,688,100);
+        connect.setForeground(Color.green);
+
+        for(int i = 0; i<points.length; i++){
+            points[i] = new JLabel(".");
+            points[i].setFont(maPolice);
+            points[i].setBounds(100*i + 95, 150, 250, 250);
+            foreground.add(points[i]);
+
+        }
+        foreground.add(connex);
+        foreground.add(flou);
+
 
 
         /** Init des side et des attributs **/
 
-        initSideNoir(temps);
-        initSideBlanc(temps); //cotés
+        temps = aTemps;
+        initSideNoir();
+        initSideBlanc(); //cotés
         cimetieres[0] = cimetiereNoir;
         cimetieres[1] = cimetiereBlanc;
-        timer[0] = timerB;
-        timer[1] = timerW;
-        chrono[0] = chronoB;
-        chrono[1] = chronoW;
         time[0] = tempsB;
         time[1] = tempsW;
-        aux[0] = auxNoirs;
-        aux[1] = auxBlancs;
 
         /** Init des SONS **/
 
 
         //Image plateau
-        grilles[0] = new ImageIcon("GrilleNoirs.png");
-        grilles[1] = new ImageIcon("GrilleBlancs.png");
-        imgPlateau = new JLabel(new ImageIcon("GrilleBlancs.png"));
+        imgPlateau = new JLabel(new ImageIcon("GrilleBlancs_Res.png"));
         imgPlateau.setBounds(0, 0, largP, largP);
         imgPlateau.setOpaque(false);
 
         plateau.setOpaque(false);
-        plateau.add(sens);
         plateau.add(foreground);
         plateau.add(grille);
         plateau.add(imgPlateau);
@@ -196,26 +186,14 @@ public class Echiquier extends JFrame implements ActionListener {
         add(plateau);
         add(centre);
 
-        setAlwaysOnTop(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        toFront();
+        repaint();
+        setVisible(true);
 
-        //test d'une partie automatique
+
         t = new Timer(1000, this);
-        bergerP.add(getIndice(piecesBlancs, 12));
-        bergerP.add(getIndice(piecesNoirs, 12));
-        bergerP.add(getIndice(piecesBlancs, 5));
-        bergerP.add(getIndice(piecesNoirs, 1));
-        bergerP.add(getIndice(piecesBlancs, 3));
-        bergerP.add(getIndice(piecesNoirs, 6));
-        bergerP.add(getIndice(piecesBlancs, 3));
-
-        bergerC.add(new Coordonnee(4, 4));
-        bergerC.add(new Coordonnee(4, 3));
-        bergerC.add(new Coordonnee(2, 4));
-        bergerC.add(new Coordonnee(2, 2));
-        bergerC.add(new Coordonnee(7, 3));
-        bergerC.add(new Coordonnee(5, 2));
-        bergerC.add(new Coordonnee(5, 1));
+        t.start();
     }
 
     //Init de la grille (ancien constructeur de grille)
@@ -227,23 +205,21 @@ public class Echiquier extends JFrame implements ActionListener {
         piecesNoirs = init(false);
         cimBlancs = new LinkedList<Piece>();
         cimNoirs = new LinkedList<Piece>();
-        deplacements = new LinkedList<String>();
 
         majTot();
 
-        ech[0] = piecesNoirs;
-        ech[1] = piecesBlancs;
-        cim[0] = cimNoirs;
-        cim[1] = cimBlancs;
+        ech[0][0] = piecesNoirs;
+        ech[0][1] = piecesBlancs;
+        ech[1][0] = cimNoirs;
+        ech[1][1] = cimBlancs;
 
         grille = new JPanel();
         grille.setBounds(36, 36, largG, largG);
         grille.setOpaque(false);
         grille.setLayout(null);
 
-        grille.addMouseListener(new MouseAdapter() {
+        mouseAdapt = new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
-                //t.start(); //ENLEVER LE COMM POUR LA DEMO DU COUP DU BERGER
                 mousePressedGrille(e);
             }
 
@@ -251,10 +227,9 @@ public class Echiquier extends JFrame implements ActionListener {
                 mouseReleasedGrille(e);
             }
 
-            public void mouseClicked(MouseEvent e) {
-                mouseClickedGrille(e);
-            }
-        });
+        };
+
+        grille.addMouseListener(mouseAdapt);
 
         grille.addMouseMotionListener(new MouseAdapter() {
             public void mouseDragged(MouseEvent e) {
@@ -265,13 +240,13 @@ public class Echiquier extends JFrame implements ActionListener {
     }
 
     //Init du side gauche (ancien constructeur de Side)
-    public void initSideNoir(int temps) {
+    public void initSideNoir() {
         sideNoir = new JPanel();
         sideNoir.setLocation(0, 0);
         sideNoir.setSize(320, 800);
         sideNoir.setLayout(null);
 
-        JLabel fond = new JLabel(new ImageIcon("Side.png"));
+        JLabel fond = new JLabel(new ImageIcon("Side_A.png"));
         fond.setBounds(0, 0, 320, 800);
 
         cimetiereNoir = new JPanel();
@@ -279,7 +254,6 @@ public class Echiquier extends JFrame implements ActionListener {
         cimetiereNoir.setOpaque(false);
         cimetiereNoir.setLayout(null);
 
-        timerB = new Timer(1000, this);
         tempsB = temps;
         int sec = (int) (tempsB / 1000 % 60);
         int min = (int) (tempsB / 60000);
@@ -288,13 +262,6 @@ public class Echiquier extends JFrame implements ActionListener {
         chronoB.setFont(new Font("maPolice", Font.BOLD, 50));
         chronoB.setBounds(0, 50, 320, 100);
 
-        auxNoirs = new JLabel ("C'est à vous (noirs) !", SwingConstants.CENTER);
-        auxNoirs.setFont(new Font("test", Font.BOLD, 25));
-        auxNoirs.setLocation(0,500);
-        auxNoirs.setSize(320,40);
-        auxNoirs.setVisible(false);
-
-        sideNoir.add(auxNoirs);
         sideNoir.add(chronoB);
         sideNoir.add(cimetiereNoir);
         affSide(1);
@@ -302,13 +269,13 @@ public class Echiquier extends JFrame implements ActionListener {
     }
 
     //Init du side droit
-    public void initSideBlanc(int temps) {
+    public void initSideBlanc() {
         sideBlanc = new JPanel();
         sideBlanc.setLocation(1080, 0);
         sideBlanc.setSize(320, 800);
         sideBlanc.setLayout(null);
 
-        JLabel fond = new JLabel(new ImageIcon("Side.png"));
+        JLabel fond = new JLabel(new ImageIcon("Side_J.png"));
         fond.setBounds(0, 0, 320, 800);
 
         cimetiereBlanc = new JPanel();
@@ -316,25 +283,32 @@ public class Echiquier extends JFrame implements ActionListener {
         cimetiereBlanc.setOpaque(false);
         cimetiereBlanc.setLayout(null);
 
-        timerW = new Timer(1000, this);
         tempsW = temps;
-        int sec = (int) (tempsB / 1000 % 60);
-        int min = (int) (tempsB / 60000);
+        int sec = (int) (tempsW / 1000 % 60);
+        int min = (int) (tempsW / 60000);
         chronoW = new JLabel(min + " : " + sec, SwingConstants.CENTER);
         chronoW.setFont(new Font("maPolice", Font.BOLD, 50));
         chronoW.setBounds(0, 50, 320, 100);
 
-        auxBlancs = new JLabel ("C'est à vous (blancs) !", SwingConstants.CENTER);
-        auxBlancs.setFont(new Font("test", Font.BOLD, 25));
-        auxBlancs.setForeground(Color.white);
-        auxBlancs.setLocation(0,500);
-        auxBlancs.setSize(320,40);
+        envoyer = new JButton("");
+        envoyer.setBounds(100,540,120,60);
+        envoyer.setOpaque(false);
+        envoyer.setContentAreaFilled(false);
+        envoyer.setBorderPainted(false);
 
-        sideBlanc.add(auxBlancs);
+        giveUpB.setBounds(95, this.getHeight()-175, 135, 65);
+        giveUpB.setOpaque(false);
+        giveUpB.setContentAreaFilled(false);
+        giveUpB.setBorderPainted(false);
+        giveUpB.addActionListener(this);
+
         sideBlanc.add(chronoW);
         sideBlanc.add(cimetiereBlanc);
+        sideBlanc.add(envoyer);
         affSide(0);
         sideBlanc.add(fond);
+        sideBlanc.add(envoyer);
+        sideBlanc.add(giveUpB);
     }
 
     /**
@@ -342,16 +316,15 @@ public class Echiquier extends JFrame implements ActionListener {
      **/
 
     public void mousePressedGrille(MouseEvent e) {
-        if (!finie) {
+        if (!finie && tour) {
             try {
-                timer[tourInt].start();
                 PieceSelect = selection(e);
 
                 coups = PieceSelect.listeDeplacementsPossibles(totPieces, sensP);
                 eat = PieceSelect.listEat(totPieces, sensP);
 
                 if (PieceSelect instanceof Roi) {
-                    coups.addAll(listRoques(ech[tourInt], ech[(tourInt + 1) % 2]));
+                    coups.addAll(listRoques(piecesBlancs, piecesNoirs));
                 }
 
                 removeCoupsEchecs(PieceSelect);
@@ -366,17 +339,14 @@ public class Echiquier extends JFrame implements ActionListener {
     }
 
     public void mouseReleasedGrille(MouseEvent e) {
-        if (!finie) {
+        if (!finie && tour) {
             Coordonnee c = new Coordonnee(caseX(e), caseY(e));
             move(PieceSelect, c, coups, eat);
         }
     }
 
-    public void mouseClickedGrille(MouseEvent e) {
-    }
-
     public void mouseDraggedGrille(MouseEvent e) {
-        if (!finie) {
+        if (!finie && tour) {
             try {
                 PieceSelect.image.setLocation(e.getX() - 40, e.getY() - 40);
                 grille.repaint();
@@ -388,88 +358,237 @@ public class Echiquier extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
         int sec, min;
-        if (e.getSource() == timerB) {
-            tempsB -= timerB.getDelay();
-            sec = (int) (tempsB / 1000 % 60);
-            min = (int) (tempsB / 60000);
-            if(tempsB % 2000 == 0) {
-                auxNoirs.setForeground(Color.RED);
-            }else{
-                auxNoirs.setForeground(Color.BLACK);
-            }
-            this.setTitle("C'est aux NOIRS de jouer, il leur reste : " + min + " minutes et " + sec + " secondes");
-        }
-
-        if (e.getSource() == timerW) {
-            tempsW -= timerW.getDelay();
-            sec = (int) (tempsW / 1000 % 60);
-            min = (int) (tempsW / 60000);
-            if(tempsW % 2000 == 0) {
-                auxBlancs.setForeground(Color.RED);
-            }else{
-                auxBlancs.setForeground(Color.WHITE);
-            }
-            this.setTitle("C'est aux BLANCS de jouer, il leur reste : " + min + " minutes et " + sec + " secondes");
-        }
-        if (tempsB <= 0) {
-            nbr = 0;
-            tps = true;
-            new WindowWin(true,tps,nbr, this);
-            timerW.stop();
-            timerB.stop();
-            finie = true;
-        }
-
-        if (tempsW <= 0) {
-            nbr = 0;
-            tps = true;
-            new WindowWin(false,tps,nbr, this);
-            timerW.stop();
-            timerB.stop();
-            finie = true;
-        }
-
-
-        /** INVERSER LE PLATEAU **/
-        if (e.getSource() == sens) {
-            tourner();
-        }
-
-
-        if (e.getSource() == giveUpB) {
-            nbr = 1;
-            new WindowWin(true,tps,nbr,this);
-            timerW.stop();
-            timerB.stop();
-            finie = true;
-        }
-        if (e.getSource() == giveUpN) {
-            nbr = 1;
-            new WindowWin(false,tps,nbr,this);
-            timerW.stop();
-            timerB.stop();
-            finie = true;
-        }
-
-        /** POUR LE COUP DU BERGER **/
 
         if (e.getSource() == t) {
-            try {
-                p = bergerP.get(i);
-                c = bergerC.get(i);
-                aCoups = p.listeDeplacementsPossibles(totPieces, sensP);
-                aEat = p.listEat(totPieces, sensP);
-                move(p, c, aCoups, aEat);
+            temps2 += t.getDelay();
+            if(temps2 == 5000){
+                try{
 
-                i++;
+                    sS = new ServerSocket(2626);
+                    sS.setSoTimeout(15000);
 
-            } catch (IndexOutOfBoundsException er) {
-                nbr = 0;
-                new WindowWin(!tour,tps, nbr, this);
-                finie = true;
+                    s = sS.accept();
+
+                    out = new ObjectOutputStream(s.getOutputStream());
+                    in = new ObjectInputStream(s.getInputStream());
+
+                        out.writeObject(temps);
+                        out.flush();
+                        out.reset();
+
+                    points[4].setForeground(Color.green);
+                    foreground.remove(connex);
+                    foreground.add(connect);
+                    foreground.repaint();
+
+                } catch (IOException er) {
+                    int choix = JOptionPane.showOptionDialog(null,"Probleme de réseau ! " +
+                                    "\n Verifiez l'IP donné au client, " +
+                                    "\n Verifiez que leux deux machines sont connectées au même réseau"+
+                                    "\n réessayez en lançant la partie d'abord sur votre machine" +
+                                    "\n si c'est l'IP qui est écrite dans vos paramètres, essayez d'en obtenir une autre sur Mon-Ip.com " +
+                                    "\n\n Allez sur le site Mon-Ip.com ? ",
+
+                                "Erreur", JOptionPane.YES_NO_OPTION,JOptionPane.ERROR_MESSAGE,null, null, null  );
+                    if(choix == 0){
+                        String link = "http://www.mon-ip.com";
+                        try{
+                            Desktop.getDesktop().browse(new URL(link).toURI());
+                        }catch(URISyntaxException | IOException err){}
+                    }
+                    this.dispose();
+                    new Home();
+                }
+            }
+
+            if(temps2 == 7000){
+                foreground.removeAll();
+                foreground.repaint();
+                cEstAVous();
                 t.stop();
             }
+            try {
+                points[temps2 / 1000 - 1].setForeground(Color.green);
+            }catch(ArrayIndexOutOfBoundsException er){}
         }
+
+        if (e.getSource() == giveUpB) {
+            toFront();
+            try {
+                out.writeObject(fin);
+                out.flush();
+                out.reset();
+            }catch(IOException er){}
+            int choix = JOptionPane.showOptionDialog(null,"Les blancs ont concede la victoire, Victoire aux noirs !"+
+                            "\n \n Retour à l'accueil ?",
+                    "Fin de partie",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null, null, null);
+
+            this.dispose();
+            if(choix == 0){
+                new Home();
+            }
+            close();
+            finie = true;
+        }
+
+            if (e.getSource() == envoyer) {
+                if (tempsB <= 0) {
+                    toFront();
+                    int choix = JOptionPane.showOptionDialog(null,"Le temps limite des noirs est depassé, victoire aux blancs !" +
+                                    "\n \n Retour à l'accueil ?",
+                                    "Fin de partie",
+                                    JOptionPane.YES_NO_OPTION,
+                                    JOptionPane.QUESTION_MESSAGE,
+                                    null, null, null);
+
+                    this.dispose();
+                    if(choix == 0){
+                        new Home();
+                    }
+                    close();
+                    finie = true;
+                }
+                if (tempsW <= 0) {
+                    toFront();
+                    int choix = JOptionPane.showOptionDialog(null,"Le temps limite des blancs est depasse, victoire aux noirs !" +
+                                    "\n \n Retour à l'accueil ?",
+                                    "Fin de partie",
+                                    JOptionPane.YES_NO_OPTION,
+                                    JOptionPane.QUESTION_MESSAGE,
+                                    null, null, null);
+                    this.dispose();
+                    if(choix == 0){
+                        new Home();
+                    }
+                    close();
+                    finie = true;
+                }
+                envoyer.removeActionListener(this);
+                try {
+                    out.writeObject(ech);
+                    out.flush();
+                    out.reset();
+                    tour = false;
+                    tourInt = 0;
+                    if (mat(piecesNoirs)) {
+                        toFront();
+                        int choix = JOptionPane.showOptionDialog(null,"Les blancs ont gagné !" +
+                                        "\n \n Retour à l'accueil ?",
+                                        "Fin de partie",
+                                        JOptionPane.YES_NO_OPTION,
+                                        JOptionPane.QUESTION_MESSAGE,
+                                        null, null, null);
+                        this.dispose();
+                        if(choix == 0){
+                            new Home();
+                        }
+                        close();
+                        finie = true;
+                    }
+
+                    cEstAAdv();
+
+                    tempsApres = System.currentTimeMillis();
+                    tempsW = tempsW - (tempsApres - tempsAvant);
+                    tempsAvant = System.currentTimeMillis();
+                    sec = (int) (tempsW / 1000 % 60);
+                    min = (int) (tempsW / 60000);
+                    chronoW.setText(min + " : " + sec);
+                    tempsAvant = System.currentTimeMillis();
+
+                } catch (IOException er) {
+                }
+                try {
+                    objetRecu = in.readObject();
+                    if(objetRecu instanceof Character){
+                        int choix = JOptionPane.showOptionDialog(null,"Les noirs ont concede la victoire, Victoire aux blancs !"+
+                                        "\n \n Retour à l'accueil ?",
+                                "Fin de partie",
+                                JOptionPane.YES_NO_OPTION,
+                                JOptionPane.QUESTION_MESSAGE,
+                                null, null, null);
+
+                        this.dispose();
+                        if(choix == 0){
+                            new Home();
+                        }
+                        finie = true;
+                    }else {
+                        ech = (LinkedList<Piece>[][]) objetRecu;
+                    }
+                    majList();
+                    majTot();
+                    tourner();
+                    jouer(pathRight);
+                    affGrille();
+                    affSide(1);
+                    grille.repaint();
+
+                    if (tempsB <= 0) {
+                        toFront();
+                        int choix = JOptionPane.showOptionDialog(null,"Le temps limite " + "des noirs est depassé, victoire aux blancs !" +
+                                        "\n \n Retour à l'accueil ?",
+                                "Fin de partie",
+                                JOptionPane.YES_NO_OPTION,
+                                JOptionPane.QUESTION_MESSAGE,
+                                null, null, null);
+
+                        this.dispose();
+                        if(choix == 0){
+                            new Home();
+                        }
+                        close();
+                        finie = true;
+                    }
+                    if (tempsW <= 0) {
+                        toFront();
+                        int choix = JOptionPane.showOptionDialog(null,"Le temps limite des blancs est depasse, victoire aux noirs !" +
+                                        "\n \n Retour à l'accueil ?",
+                                "Fin de partie",
+                                JOptionPane.YES_NO_OPTION,
+                                JOptionPane.QUESTION_MESSAGE,
+                                null, null, null);
+                        this.dispose();
+                        if(choix == 0){
+                            new Home();
+                        }
+                        close();
+                        finie = true;
+                    }
+
+                    tour = true;
+                    tourInt = 1;
+                    cEstAVous();
+
+                    if (mat(piecesBlancs)) {
+                        toFront();
+                        int choix = JOptionPane.showOptionDialog(null,"Les noirs ont gagné !" +
+                                        "\n \n Retour à l'accueil ?",
+                                "Fin de partie",
+                                JOptionPane.YES_NO_OPTION,
+                                JOptionPane.QUESTION_MESSAGE,
+                                null, null, null);
+                        this.dispose();
+                        if(choix == 0){
+                            new Home();
+                        }
+                        close();
+                        finie = true;
+                    }
+
+                    tempsApres = System.currentTimeMillis();
+                    tempsB = tempsB - (tempsApres - tempsAvant);
+                    sec = (int) (tempsB / 1000 % 60);
+                    min = (int) (tempsB / 60000);
+                    chronoB.setText(min + " : " + sec);
+                    grille.addMouseListener(mouseAdapt);
+
+                } catch (ClassNotFoundException | IOException er) {
+                }
+            }
     }
 
     /**  METHODES POUR LES SONS **/
@@ -536,6 +655,13 @@ public class Echiquier extends JFrame implements ActionListener {
         totPieces.addAll(piecesBlancs);
     }
 
+    //maj des listes quand on recoit ech
+    public void majList(){
+        piecesNoirs = ech[0][0];
+        piecesBlancs = ech[0][1];
+        cimBlancs = ech[1][1];
+        cimNoirs = ech[1][0];
+    }
     //numéro de la case avec des coordonnées
     public int getNum(int i, int j) {
         return 8 * j + i;
@@ -544,27 +670,22 @@ public class Echiquier extends JFrame implements ActionListener {
     //affichage des pieces
     public void affGrille() {
         grille.removeAll();
-        for (int i = 0; i < 2; i++) {
-            for (Piece p : ech[i]) {
-                try {
-                    p.majLocation();
-                    grille.add(p.image);
-                } catch (NullPointerException e) {
-                }
+        for (Piece p : totPieces) {
+            try {
+                p.majLocation();
+                grille.add(p.image);
+            } catch (NullPointerException e) {
             }
         }
+        grille.repaint();
     }
 
     public void tourner(){
-        sensInt = !sensP ? 1 : 0;
         for(Piece p : totPieces){
             p.num = 63 - p.num;
             p.maj();
             p.majLocation();
         }
-        sensP = !sensP;
-        imgPlateau.setIcon(grilles[sensInt]);
-
     }
 
     //affichage des coups possibles
@@ -622,7 +743,6 @@ public class Echiquier extends JFrame implements ActionListener {
 
         LinkedList<Piece> copy = copyP(piecesT);
         Piece roiTest;
-        Piece tourTest;
 
         int case1Petit = roi.num +1;
         int case2Petit = roi.num + 2;
@@ -678,10 +798,8 @@ public class Echiquier extends JFrame implements ActionListener {
     // Methode pour les mouvements : utile pour que l'ordinateur teste des mouvements
     public void move(Piece p, Coordonnee c, LinkedList<Coordonnee> aCoups, LinkedList<Coordonnee> aEat) {
 
-        boolean roque = false;
         grille.removeAll();
         affGrille();
-        grille.repaint();
         try {
             if (containsCoor(aCoups, c) || containsCoor(aEat, c)) {
                 p.num = c.getX() + c.getY() * 8;
@@ -691,84 +809,36 @@ public class Echiquier extends JFrame implements ActionListener {
                 dame(p);
                 jouer(pathRight);
 
-                /** LES ROCS **/
-                if(p instanceof Roi && p.roquable){
-                    if(c.getX() == 2){
-                        if(c.getY() == 0) {
-                            deplacer(getIndice(piecesNoirs, 0), new Coordonnee(3, 0));
-                        }
-                        if(c.getY() == 7){
-                            deplacer(getIndice(piecesBlancs, 0), new Coordonnee(3, 7));
-                        }
-                        deplacements.add(numCoup+". : O-O-O -- ");
-                        roque = true;
+
+                if (p instanceof Roi && p.roquable) {
+                    if (c.getX() == 2) {
+                        deplacer(getIndice(piecesBlancs, 0), new Coordonnee(3, 7));
                     }
-                    if(c.getX() == 6) {
-                        if (c.getY() == 0) {
-                            deplacer(getIndice(piecesNoirs, 7), new Coordonnee(5, 0));
-                        }
-                        if(c.getY() == 7){
-                            deplacer(getIndice(piecesBlancs, 7), new Coordonnee(5, 7));
-                        }
-                        deplacements.add(numCoup+". : O-O -- ");
-                        roque = true;
+                    if (c.getX() == 6) {
+                        deplacer(getIndice(piecesBlancs, 7), new Coordonnee(5, 7));
                     }
                 }
                 p.roquable = false;
 
-
-                double tempsAMAJ;
-                if(tour) {
-                    tempsAMAJ = tempsW;
-                }else{
-                    tempsAMAJ = tempsB;
-                }
-                int sec = (int)(tempsAMAJ/1000 % 60);
-                int min = (int)(tempsAMAJ/60000);
-
-                chrono[tourInt].setText(min+" : " +sec);
-
-                aux[tourInt].setVisible(false);
-                tour = !p.couleur;
-                tourInt = tour ? 1 : 0;
-                aux[tourInt].setVisible(true);
-
-                timer[(tourInt+1)%2].stop();
-                timer[tourInt].start();
-
-
                 if (containsCoor(aEat, c)) {
-                    Piece mangee = getParCase(ech[tourInt], getNum(c.getX(), c.getY()));
-                    ech[tourInt].remove(mangee);
-                    cim[tourInt].add(mangee);
+                    Piece mangee = getParCase(piecesNoirs, getNum(c.getX(), c.getY()));
+                    piecesNoirs.remove(mangee);
+                    cimNoirs.add(mangee);
+                    majTot();
                     affGrille();
-                    affSide(tourInt);
-                    if(!roque)
-                        if(p instanceof Pion){
-                            deplacements.add(numCoup+". : "+((Pion) p).toStringX()+""+c.toStringEat()+" -- ");
-                        }else {
-                            deplacements.add(numCoup+". : "+p + "" + c.toStringEat()+" -- ");
-                        }
-                }else{
-                    if(!roque)
-                        deplacements.add(numCoup+". : "+p+""+c+" -- ");
+                    affSide(0);
                 }
-                coupsJouees.append(deplacements.get(numCoup));
                 numCoup++;
 
-                if (mat(ech[tourInt])) {
-                    nbr = 0;
-                    new WindowWin(!tour,tps, nbr, this);
-                    finie = true;
-                }
+                grille.add(PieceSelect.image);
+                foreground.remove(PieceSelect.image);
+                majTot();
+                envoyer.addActionListener(this);
+                grille.removeMouseListener(mouseAdapt);
+
             }else{
                 jouer(pathWrong);
             }
-
-            grille.add(PieceSelect.image);
-            foreground.remove(PieceSelect.image);
-            majTot();
-
         } catch (NullPointerException er) {
         }
         PieceSelect = null;
@@ -782,18 +852,11 @@ public class Echiquier extends JFrame implements ActionListener {
         p.majLocation();
     }
 
-    public String coder(Piece p, Coordonnee c){
-        String m = Integer.toString(c.getX());
-        m += Integer.toString(c.getY());
-        m += Integer.toString(p.couleur ? 1 : 0);
-        m += Integer.toHexString(p.indice);
 
-        return m;
-    }
 
     //obtenir la piece sur laquelle on clique
     public Piece selection(MouseEvent e) {
-        for (Piece p : ech[tourInt]) {
+        for (Piece p : piecesBlancs) {
             try {
                 if (caseX(e) + caseY(e) * 8 == p.num) {
                     return p;
@@ -826,17 +889,17 @@ public class Echiquier extends JFrame implements ActionListener {
     // Methode qui enleve de la liste des coordonnées de mouvements ce qui menent a un echec
     public void removeCoupsEchecs(Piece p) {
 
-        boolean b = true;
+        boolean b;
         LinkedList<Coordonnee> toRemove = new LinkedList<Coordonnee>();
         for (Coordonnee c : coups) {
 
-            LinkedList<Piece> pieces = copyP(ech[tourInt]);
+            LinkedList<Piece> pieces = copyP(ech[0][tourInt]);
 
             Piece sel = getIndice(pieces, p.indice);
             sel.num = c.getX() + c.getY() * 8;
             sel.maj();
 
-            b = echec(pieces, ech[(tourInt + 1) % 2]);
+            b = echec(pieces, ech[0][(tourInt+1)%2]);
             if (b) {
                 toRemove.add(c);
             }
@@ -844,8 +907,8 @@ public class Echiquier extends JFrame implements ActionListener {
         coups.removeAll(toRemove);
         toRemove.clear();
         for (Coordonnee c : eat) {
-            LinkedList<Piece> pieces = copyP(ech[tourInt]);
-            LinkedList<Piece> piecesAdv = copyP(ech[(tourInt + 1) % 2]);
+            LinkedList<Piece> pieces = copyP(ech[0][tourInt]);
+            LinkedList<Piece> piecesAdv = copyP(ech[0][(tourInt+1)%2]);
 
             Piece sel = getIndice(pieces, p.indice);
             sel.num = c.getX() + c.getY() * 8;
@@ -894,6 +957,7 @@ public class Echiquier extends JFrame implements ActionListener {
         for (Piece p : pieces) {
             coups = p.listeDeplacementsPossibles(totPieces, sensP);
             eat = p.listEat(totPieces, sensP);
+
             try {
                 removeCoupsEchecs(p);
             } catch (NullPointerException er) {
@@ -902,7 +966,6 @@ public class Echiquier extends JFrame implements ActionListener {
             totMove.addAll(coups);
             totMove.addAll(eat);
         }
-
         if (totMove.size() == 0)
             return true;
         else
@@ -912,13 +975,12 @@ public class Echiquier extends JFrame implements ActionListener {
     //transforme un pion en dame si il atteint le bord adverse
     public void dame(Piece p){
         if(p instanceof Pion){
-            if(((p.couleur ^ !sensP) && p.y == 0) || (((!p.couleur ^ !sensP) && p.y == 7))){
-                int couleur = p.couleur ? 1 : 0;
-                ech[couleur].remove(p);
+            if(p.y == 0){
+                piecesBlancs.remove(p);
                 Piece newP = new Reine(p.indice, p.num, p.couleur);
                 newP.majLocation();
                 PieceSelect = newP;
-                ech[couleur].add(newP);
+                piecesBlancs.add(newP);
                 majTot();
                 affGrille();
             }
@@ -957,11 +1019,10 @@ public class Echiquier extends JFrame implements ActionListener {
     /** METHODES UTILISEES PAR SIDES **/
 
     public void affSide(int couleurInt) {
-
         int x, y;
         int i = 0;
         try {
-            for (Piece p : cim[couleurInt]) {
+            for (Piece p : ech[1][couleurInt]) {
                 x = (int) (i%4 * 62.5);
                 y = (int) (i/4 * 57.5);
                 i++;
@@ -973,5 +1034,25 @@ public class Echiquier extends JFrame implements ActionListener {
         } catch (Exception e) {}
     }
 
+    public void cEstAVous(){
+        setTitle("C'est à vous ! Appuyez sur l'horloge pour valider votre coup");
+    }
+
+    public void cEstAAdv(){
+        setTitle("C'est aux noirs ! Attendez que votre adversaire finisse son coup");
+    }
+
     /** FIN DES METHODES UTILISEES PAR SIDES **/
+
+    /** METHODE POUR LE JEU EN RESEAU **/
+    public void close(){
+        try {
+            sS.close();
+            s.close();
+            in.close();
+        } catch (IOException er) {
+            er.printStackTrace();
+        }
+    }
+    /** FIN DE LA METHODE POUR LE RESEAU **/
 }

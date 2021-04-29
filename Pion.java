@@ -1,8 +1,5 @@
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
-
-import java.awt.*;
-import java.util.LinkedList;
 import javax.swing.*;
+import java.util.LinkedList;
 	
 public class Pion extends Piece {
 
